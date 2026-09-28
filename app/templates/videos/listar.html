@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}Desenvolvimento Pessoal{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1><i class="fas fa-video"></i> Desenvolvimento Pessoal</h1>
+        <p>Conteúdo selecionado pelo profissional para seu crescimento pessoal</p>
+    </div>
+</section>
+
+<section class="content-section">
+    <div class="container">
+        {% if categorias %}
+        <div class="filter-bar">
+            <a href="{{ url_for('videos.listar') }}" class="filter-tag {% if not categoria_atual %}active{% endif %}">Todos</a>
+            {% for cat in categorias %}
+            <a href="{{ url_for('videos.por_categoria', categoria=cat) }}" class="filter-tag {% if categoria_atual == cat %}active{% endif %}">{{ cat }}</a>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if videos %}
+        <div class="video-grid">
+            {% for video in videos %}
+            <div class="video-card">
+                <div class="video-thumbnail">
+                    {% if video.thumbnail %}
+                    <img src="{{ video.thumbnail }}" alt="{{ video.titulo }}">
+                    {% else %}
+                    <div class="video-placeholder">
+                        <i class="fas fa-play-circle"></i>
+                    </div>
+                    {% endif %}
+                    <span class="video-badge">{{ video.categoria }}</span>
+                </div>
+                <div class="video-info">
+                    <h3>{{ video.titulo }}</h3>
+                    <p>{{ video.descricao or '' }}</p>
+                    <a href="{{ video.url_youtube }}" target="_blank" rel="noopener" class="btn btn-small">
+                        <i class="fas fa-play"></i> Assistir
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="fas fa-film"></i>
+            <h3>Nenhum vídeo disponível ainda</h3>
+            <p>O profissional está preparando conteúdo especial para você. Volte em breve!</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

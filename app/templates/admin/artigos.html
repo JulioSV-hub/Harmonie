@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Gerenciar Artigos{% endblock %}
+
+{% block content %}
+<section class="admin-header">
+    <div class="container">
+        <div class="admin-title">
+            <h1><i class="fas fa-book"></i> Gerenciar Artigos</h1>
+        </div>
+        <div class="admin-header-actions">
+            <a href="{{ url_for('admin.novo_artigo') }}" class="btn btn-primary btn-small">
+                <i class="fas fa-plus"></i> Novo Artigo
+            </a>
+            <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline btn-small">
+                <i class="fas fa-arrow-left"></i> Voltar
+            </a>
+        </div>
+    </div>
+</section>
+
+<section class="admin-content">
+    <div class="container">
+        {% if artigos %}
+        <div class="table-container">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Título</th>
+                        <th>Categoria</th>
+                        <th>Autor</th>
+                        <th>Data</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for artigo in artigos %}
+                    <tr>
+                        <td>{{ artigo.titulo }}</td>
+                        <td><span class="category-badge">{{ artigo.categoria }}</span></td>
+                        <td>{{ artigo.autor }}</td>
+                        <td>{{ artigo.criado_em.strftime('%d/%m/%Y') }}</td>
+                        <td>
+                            <a href="{{ url_for('leitura.ver_artigo', id=artigo.id) }}" target="_blank" class="btn-action" title="Ver">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <a href="{{ url_for('admin.excluir_artigo', id=artigo.id) }}" class="btn-action btn-cancel" title="Excluir" onclick="return confirm('Tem certeza?')">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="fas fa-book"></i>
+            <h3>Nenhum artigo cadastrado</h3>
+            <a href="{{ url_for('admin.novo_artigo') }}" class="btn btn-primary">Publicar Primeiro Artigo</a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

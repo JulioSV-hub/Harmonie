@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%8C%BF%3C/text%3E%3C/svg%3E">
+    <title>Diário de Gratidão - Harmony</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body data-page="atividades">
+    <div id="site-header"></div>
+
+    <main class="main-content">
+        <section class="page-header">
+            <div class="container">
+                <a href="atividades.html" class="back-link"><i class="fas fa-arrow-left"></i> Voltar às atividades</a>
+                <h1><i class="fas fa-heart"></i> Diário de Gratidão</h1>
+                <p>Registre as coisas boas do seu dia e cultive a gratidão</p>
+            </div>
+        </section>
+
+        <section class="gratitude-section">
+            <div class="container">
+                <div class="gratitude-container">
+                    <p class="privacy-note">
+                        <i class="fas fa-lock"></i>
+                        <span>Suas entradas ficam salvas <strong>apenas neste navegador</strong>. Nada é enviado pela internet e ninguém mais tem acesso, nem o profissional. Se limpar os dados do navegador ou trocar de aparelho, elas não estarão lá.</span>
+                    </p>
+
+                    <form class="gratitude-form" id="gratitudeForm">
+                        <div class="form-group">
+                            <label>Como você está se sentindo hoje?</label>
+                            <div class="mood-selector">
+                                <label class="mood-option">
+                                    <input type="radio" name="humor" value="1">
+                                    <span class="mood-emoji">😢</span>
+                                    <span class="mood-label">Muito mal</span>
+                                </label>
+                                <label class="mood-option">
+                                    <input type="radio" name="humor" value="2">
+                                    <span class="mood-emoji">😔</span>
+                                    <span class="mood-label">Mal</span>
+                                </label>
+                                <label class="mood-option">
+                                    <input type="radio" name="humor" value="3" checked>
+                                    <span class="mood-emoji">😐</span>
+                                    <span class="mood-label">Neutro</span>
+                                </label>
+                                <label class="mood-option">
+                                    <input type="radio" name="humor" value="4">
+                                    <span class="mood-emoji">🙂</span>
+                                    <span class="mood-label">Bem</span>
+                                </label>
+                                <label class="mood-option">
+                                    <input type="radio" name="humor" value="5">
+                                    <span class="mood-emoji">😊</span>
+                                    <span class="mood-label">Muito bem</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="gratidao"><i class="fas fa-pray"></i> Pelo que você é grato(a) hoje?</label>
+                            <textarea id="gratidao" name="gratidao" rows="3" maxlength="2000" placeholder="Ex: Sou grato pela minha família, pelo sol de hoje..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="texto"><i class="fas fa-pen"></i> Como foi seu dia? (opcional)</label>
+                            <textarea id="texto" name="texto" rows="4" maxlength="5000" placeholder="Escreva livremente sobre seus pensamentos e sentimentos..."></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-full">
+                            <i class="fas fa-save"></i> Salvar Entrada
+                        </button>
+                    </form>
+
+                    <div class="gratitude-history" id="historico" hidden>
+                        <div class="gratitude-history-header">
+                            <h3><i class="fas fa-history"></i> Suas Entradas</h3>
+                            <button type="button" class="link-button" id="apagarTudo"><i class="fas fa-trash"></i> Apagar tudo</button>
+                        </div>
+                        <div id="entradas"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="site-footer"></div>
+
+    <script src="assets/js/layout.js"></script>
+    <script type="module">
+        import { getSite } from './assets/js/store.js';
+        getSite().then(window.Harmony.applySite).catch(console.error);
+    </script>
+    <script>
+        (function () {
+            const { escapeHtml, showNotification } = window.Harmony;
+            const STORAGE_KEY = 'harmony.diario';
+            const EMOJIS = { 1: '😢', 2: '😔', 3: '😐', 4: '🙂', 5: '😊' };
+            const form = document.getElementById('gratitudeForm');
+            const historico = document.getElementById('historico');
+            const lista = document.getElementById('entradas');
+
+            function load() {
+                try {
+                    const data = JSON.parse(localStorage.getItem(STORAGE_KEY));
+                    return Array.isArray(data) ? data : [];
+                } catch {
+                    return [];
+                }
+            }
+
+            function save(entradas) {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(entradas));
+            }
+
+            function formatDateTime(iso) {
+                const d = new Date(iso);
+                return isNaN(d) ? '' : d.toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
+            }
+
+            function render() {
+                const entradas = load();
+                historico.hidden = entradas.length === 0;
+                lista.innerHTML = entradas.map(e => `
+                    <div class="gratitude-entry">
+                        <div class="entry-header">
+                            <span class="entry-mood">${EMOJIS[e.humor] || EMOJIS[3]}</span>
+                            <span class="entry-date">${escapeHtml(formatDateTime(e.criadoEm))}</span>
+                            <button type="button" class="entry-delete" data-id="${escapeHtml(e.id)}" title="Apagar entrada" aria-label="Apagar entrada" style="margin-left:auto;">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                        ${e.gratidao ? `<p class="entry-gratitude"><strong>Gratidão:</strong> ${escapeHtml(e.gratidao)}</p>` : ''}
+                        ${e.texto ? `<p class="entry-text">${escapeHtml(e.texto)}</p>` : ''}
+                    </div>`
+                ).join('');
+            }
+
+            form.addEventListener('submit', e => {
+                e.preventDefault();
+                const data = new FormData(form);
+                const gratidao = (data.get('gratidao') || '').trim();
+                const texto = (data.get('texto') || '').trim();
+                const humor = Number(data.get('humor')) || 3;
+
+                if (!gratidao && !texto) {
+                    showNotification('Escreva pelo menos uma coisa antes de salvar.', 'erro');
+                    return;
+                }
+
+                const entradas = load();
+                entradas.unshift({
+                    id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+                    criadoEm: new Date().toISOString(),
+                    humor,
+                    gratidao,
+                    texto,
+                });
+
+                try {
+                    save(entradas);
+                } catch {
+                    showNotification('Não foi possível salvar neste navegador.', 'erro');
+                    return;
+                }
+
+                form.reset();
+                form.querySelector('input[name="humor"][value="3"]').checked = true;
+                render();
+                showNotification('Entrada salva! Continue cultivando a gratidão.');
+            });
+
+            lista.addEventListener('click', e => {
+                const btn = e.target.closest('.entry-delete');
+                if (!btn || !confirm('Apagar esta entrada?')) return;
+                save(load().filter(x => x.id !== btn.dataset.id));
+                render();
+            });
+
+            document.getElementById('apagarTudo').addEventListener('click', () => {
+                if (!confirm('Apagar todas as entradas do diário? Isso não pode ser desfeito.')) return;
+                localStorage.removeItem(STORAGE_KEY);
+                render();
+            });
+
+            render();
+        })();
+    </script>
+</body>
+</html>

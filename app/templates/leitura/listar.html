@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Material de Leitura{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1><i class="fas fa-book-open"></i> Material de Leitura</h1>
+        <p>Artigos e reflexões para seu crescimento pessoal</p>
+    </div>
+</section>
+
+<section class="content-section">
+    <div class="container">
+        {% if categorias %}
+        <div class="filter-bar">
+            <a href="{{ url_for('leitura.listar') }}" class="filter-tag {% if not categoria_atual %}active{% endif %}">Todos</a>
+            {% for cat in categorias %}
+            <a href="{{ url_for('leitura.por_categoria', categoria=cat) }}" class="filter-tag {% if categoria_atual == cat %}active{% endif %}">{{ cat }}</a>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if artigos %}
+        <div class="articles-grid">
+            {% for artigo in artigos %}
+            <div class="article-card">
+                <div class="article-category">{{ artigo.categoria }}</div>
+                <h3>{{ artigo.titulo }}</h3>
+                <p>{{ artigo.resumo or artigo.conteudo[:150] + '...' }}</p>
+                <div class="article-meta">
+                    <span><i class="fas fa-user"></i> {{ artigo.autor }}</span>
+                    <span><i class="fas fa-calendar"></i> {{ artigo.criado_em.strftime('%d/%m/%Y') }}</span>
+                </div>
+                <a href="{{ url_for('leitura.ver_artigo', id=artigo.id) }}" class="btn btn-small">
+                    <i class="fas fa-arrow-right"></i> Ler Artigo
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="fas fa-book"></i>
+            <h3>Nenhum artigo disponível ainda</h3>
+            <p>O profissional está preparando material especial para você. Volte em breve!</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block title %}Painel do Profissional{% endblock %}
+
+{% block content %}
+<section class="admin-header">
+    <div class="container">
+        <div class="admin-title">
+            <h1><i class="fas fa-cog"></i> Painel do Profissional</h1>
+            <p>Gerencie seu conteúdo e agendamentos</p>
+        </div>
+        <a href="{{ url_for('auth.logout') }}" class="btn btn-outline btn-small">
+            <i class="fas fa-sign-out-alt"></i> Sair
+        </a>
+    </div>
+</section>
+
+<section class="admin-dashboard">
+    <div class="container">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon" style="background: var(--gradient-1);">
+                    <i class="fas fa-video"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>{{ total_videos }}</h3>
+                    <p>Vídeos</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: var(--gradient-2);">
+                    <i class="fas fa-book"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>{{ total_artigos }}</h3>
+                    <p>Artigos</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: var(--gradient-3);">
+                    <i class="fas fa-calendar"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>{{ total_agendamentos }}</h3>
+                    <p>Agendamentos</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: var(--gradient-4);">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>{{ agendamentos_pendentes }}</h3>
+                    <p>Pendentes</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="admin-actions">
+            <h2>Ações Rápidas</h2>
+            <div class="actions-grid">
+                <a href="{{ url_for('admin.novo_video') }}" class="action-card">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>Novo Vídeo</span>
+                </a>
+                <a href="{{ url_for('admin.novo_artigo') }}" class="action-card">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>Novo Artigo</span>
+                </a>
+                <a href="{{ url_for('admin.agendamentos') }}" class="action-card">
+                    <i class="fas fa-list"></i>
+                    <span>Ver Agendamentos</span>
+                </a>
+                <a href="{{ url_for('admin.videos') }}" class="action-card">
+                    <i class="fas fa-film"></i>
+                    <span>Gerenciar Vídeos</span>
+                </a>
+            </div>
+        </div>
+
+        {% if ultimos_agendamentos %}
+        <div class="admin-recent">
+            <h2>Últimos Agendamentos</h2>
+            <div class="table-container">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Paciente</th>
+                            <th>Data</th>
+                            <th>Horário</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for ag in ultimos_agendamentos %}
+                        <tr>
+                            <td>{{ ag.nome_paciente }}</td>
+                            <td>{{ ag.data_consulta.strftime('%d/%m/%Y') }}</td>
+                            <td>{{ ag.horario }}</td>
+                            <td>
+                                <span class="status-badge status-{{ ag.status }}">{{ ag.status }}</span>
+                            </td>
+                            <td>
+                                {% if ag.status == 'pendente' %}
+                                <a href="{{ url_for('admin.atualizar_status', id=ag.id, status='confirmado') }}" class="btn-action btn-confirm" title="Confirmar">
+                                    <i class="fas fa-check"></i>
+                                </a>
+                                <a href="{{ url_for('admin.atualizar_status', id=ag.id, status='cancelado') }}" class="btn-action btn-cancel" title="Cancelar">
+                                    <i class="fas fa-times"></i>
+                                </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

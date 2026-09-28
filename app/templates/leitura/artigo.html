@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}{{ artigo.titulo }}{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <a href="{{ url_for('leitura.listar') }}" class="back-link"><i class="fas fa-arrow-left"></i> Voltar aos artigos</a>
+    </div>
+</section>
+
+<section class="article-detail">
+    <div class="container">
+        <article class="article-full">
+            <div class="article-header">
+                <span class="article-category-badge">{{ artigo.categoria }}</span>
+                <h1>{{ artigo.titulo }}</h1>
+                <div class="article-meta">
+                    <span><i class="fas fa-user"></i> {{ artigo.autor }}</span>
+                    <span><i class="fas fa-calendar"></i> {{ artigo.criado_em.strftime('%d/%m/%Y') }}</span>
+                </div>
+            </div>
+            <div class="article-body">
+                {{ artigo.conteudo | safe }}
+            </div>
+        </article>
+    </div>
+</section>
+{% endblock %}

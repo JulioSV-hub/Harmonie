@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%8C%BF%3C/text%3E%3C/svg%3E">
+    <title>Painel do Profissional - Harmony</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css">
+    <link rel="stylesheet" href="../assets/css/admin.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar admin-topbar">
+        <div class="container nav-container">
+            <a href="../index.html" class="nav-logo">
+                <i class="fas fa-spa"></i>
+                <span>Harmony</span>
+            </a>
+            <div class="admin-topbar-actions">
+                <span class="admin-user" id="usuarioEmail"></span>
+                <a href="../index.html" class="btn btn-outline btn-small" target="_blank" rel="noopener"><i class="fas fa-external-link-alt"></i> <span>Ver site</span></a>
+                <button type="button" class="btn btn-outline btn-small" id="sairBtn" hidden><i class="fas fa-sign-out-alt"></i> <span>Sair</span></button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <!-- Carregando -->
+        <section class="auth-section" id="viewCarregando">
+            <i class="fas fa-circle-notch fa-spin spinner" aria-label="Carregando"></i>
+        </section>
+
+        <!-- Firebase não configurado -->
+        <section class="auth-section" id="viewNaoConfigurado" hidden>
+            <div class="container">
+                <div class="auth-card">
+                    <div class="auth-header">
+                        <i class="fas fa-plug"></i>
+                        <h2>Painel indisponível</h2>
+                        <p>O Firebase ainda não foi configurado neste site. Siga o guia <strong>SETUP-FIREBASE.md</strong> do projeto.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Login -->
+        <section class="auth-section" id="viewLogin" hidden>
+            <div class="container">
+                <div class="auth-card">
+                    <div class="auth-header">
+                        <i class="fas fa-user-shield"></i>
+                        <h2>Área do Profissional</h2>
+                        <p>Acesse o painel de gerenciamento</p>
+                    </div>
+
+                    <form class="auth-form" id="loginForm">
+                        <div class="form-group">
+                            <label for="loginEmail"><i class="fas fa-envelope"></i> E-mail</label>
+                            <input type="email" id="loginEmail" required autocomplete="username" placeholder="seu@email.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="loginSenha"><i class="fas fa-lock"></i> Senha</label>
+                            <input type="password" id="loginSenha" required autocomplete="current-password" placeholder="Sua senha">
+                        </div>
+                        <p class="form-error" id="loginErro" role="alert" hidden></p>
+                        <button type="submit" class="btn btn-primary btn-full">
+                            <i class="fas fa-sign-in-alt"></i> Entrar
+                        </button>
+                    </form>
+
+                    <div class="auth-footer">
+                        <button type="button" class="link-button" id="esqueciBtn">Esqueci minha senha</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sem permissão -->
+        <section class="auth-section" id="viewSemPermissao" hidden>
+            <div class="container">
+                <div class="auth-card">
+                    <div class="auth-header">
+                        <i class="fas fa-user-lock"></i>
+                        <h2>Sem acesso</h2>
+                        <p>Esta conta não tem permissão de administrador.</p>
+                    </div>
+                    <div class="auth-footer">
+                        <small>Para liberar, o desenvolvedor cria o documento <code>admins/<span id="semPermissaoUid"></span></code> no Firestore.</small>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Painel -->
+        <div id="viewPainel" hidden>
+            <section class="admin-header">
+                <div class="container">
+                    <div class="admin-title">
+                        <h1><i class="fas fa-cog"></i> Painel do Profissional</h1>
+                        <p>Gerencie conteúdo, textos e agendamentos. As alterações aparecem no site na hora.</p>
+                    </div>
+                </div>
+            </section>
+
+            <div class="container">
+                <nav class="admin-tabs" role="tablist">
+                    <button type="button" class="admin-tab active" data-tab="agendamentos" role="tab"><i class="fas fa-calendar-check"></i> Agendamentos <span class="tab-badge" id="pendentesBadge" hidden></span></button>
+                    <button type="button" class="admin-tab" data-tab="videos" role="tab"><i class="fas fa-video"></i> Vídeos</button>
+                    <button type="button" class="admin-tab" data-tab="artigos" role="tab"><i class="fas fa-book-open"></i> Artigos</button>
+                    <button type="button" class="admin-tab" data-tab="site" role="tab"><i class="fas fa-pen"></i> Textos e dados</button>
+                    <button type="button" class="admin-tab" data-tab="atividades" role="tab"><i class="fas fa-spa"></i> Atividades</button>
+                </nav>
+            </div>
+
+            <section class="admin-content">
+                <div class="container">
+
+                    <!-- AGENDAMENTOS -->
+                    <div data-panel="agendamentos">
+                        <div class="panel-toolbar">
+                            <h2>Pedidos de agendamento</h2>
+                            <div class="panel-filters">
+                                <select id="agFiltro" aria-label="Filtrar agendamentos">
+                                    <option value="proximos">Próximos (pendentes e confirmados)</option>
+                                    <option value="pendente">Pendentes</option>
+                                    <option value="confirmado">Confirmados</option>
+                                    <option value="concluido">Concluídos</option>
+                                    <option value="cancelado">Cancelados</option>
+                                    <option value="todos">Todos</option>
+                                </select>
+                                <button type="button" class="btn btn-outline btn-small" id="agRecarregar"><i class="fas fa-sync-alt"></i> Atualizar</button>
+                            </div>
+                        </div>
+                        <div class="table-container" id="agTabelaBox">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr><th>Data</th><th>Horário</th><th>Paciente</th><th>Modalidade</th><th>Motivo</th><th>Status</th><th>Ações</th></tr>
+                                </thead>
+                                <tbody id="agTabela"></tbody>
+                            </table>
+                        </div>
+                        <div class="empty-state" id="agVazio" hidden>
+                            <i class="fas fa-calendar"></i>
+                            <h3>Nenhum agendamento aqui</h3>
+                        </div>
+                    </div>
+
+                    <!-- VÍDEOS -->
+                    <div data-panel="videos" hidden>
+                        <div class="panel-toolbar">
+                            <h2>Vídeos</h2>
+                            <button type="button" class="btn btn-primary btn-small" id="videoNovo"><i class="fas fa-plus"></i> Novo vídeo</button>
+                        </div>
+
+                        <form class="admin-form wide" id="videoForm" hidden novalidate>
+                            <h3 id="videoFormTitulo">Novo vídeo</h3>
+                            <div class="form-group">
+                                <label for="videoTitulo">Título *</label>
+                                <input type="text" id="videoTitulo" maxlength="200" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="videoYoutube">Link do YouTube *</label>
+                                <input type="url" id="videoYoutube" required placeholder="https://www.youtube.com/watch?v=...">
+                                <span class="field-hint">A miniatura é gerada automaticamente a partir do link.</span>
+                            </div>
+                            <div class="form-group">
+                                <label for="videoCategoria">Categoria *</label>
+                                <input type="text" id="videoCategoria" list="videoCategorias" maxlength="50" required placeholder="Ex.: Ansiedade">
+                                <datalist id="videoCategorias"></datalist>
+                            </div>
+                            <div class="form-group">
+                                <label for="videoDescricao">Descrição</label>
+                                <textarea id="videoDescricao" rows="3" maxlength="600"></textarea>
+                            </div>
+                            <p class="form-error" id="videoErro" role="alert" hidden></p>
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Salvar</button>
+                                <button type="button" class="btn btn-outline" data-cancelar="video">Cancelar</button>
+                            </div>
+                        </form>
+
+                        <div class="table-container" id="videosTabelaBox">
+                            <table class="admin-table">
+                                <thead><tr><th></th><th>Título</th><th>Categoria</th><th>Ações</th></tr></thead>
+                                <tbody id="videosTabela"></tbody>
+                            </table>
+                        </div>
+                        <div class="empty-state" id="videosVazio" hidden>
+                            <i class="fas fa-film"></i>
+                            <h3>Nenhum vídeo cadastrado</h3>
+                        </div>
+                    </div>
+
+                    <!-- ARTIGOS -->
+                    <div data-panel="artigos" hidden>
+                        <div class="panel-toolbar">
+                            <h2>Artigos</h2>
+                            <button type="button" class="btn btn-primary btn-small" id="artigoNovo"><i class="fas fa-plus"></i> Novo artigo</button>
+                        </div>
+
+                        <form class="admin-form wide" id="artigoForm" hidden novalidate>
+                            <h3 id="artigoFormTitulo">Novo artigo</h3>
+                            <div class="form-group">
+                                <label for="artigoTitulo">Título *</label>
+                                <input type="text" id="artigoTitulo" maxlength="200" required>
+                                <span class="field-hint" id="artigoEndereco"></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="artigoResumo">Resumo</label>
+                                <textarea id="artigoResumo" rows="2" maxlength="300" placeholder="Aparece na lista de artigos e no destaque da página inicial"></textarea>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="artigoCategoria">Categoria *</label>
+                                    <input type="text" id="artigoCategoria" list="artigoCategorias" maxlength="50" required>
+                                    <datalist id="artigoCategorias"></datalist>
+                                </div>
+                                <div class="form-group">
+                                    <label for="artigoAutor">Autor</label>
+                                    <input type="text" id="artigoAutor" maxlength="100">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="artigoData">Data de publicação</label>
+                                    <input type="date" id="artigoData">
+                                </div>
+                                <div class="form-group">
+                                    <label>&nbsp;</label>
+                                    <div class="checkbox-row">
+                                        <label><input type="checkbox" id="artigoPublicado"> Publicado</label>
+                                        <label><input type="checkbox" id="artigoDestaque"> Destaque na página inicial</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Conteúdo *</label>
+                                <div id="artigoEditor" class="editor"></div>
+                            </div>
+                            <p class="form-error" id="artigoErro" role="alert" hidden></p>
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Salvar</button>
+                                <button type="button" class="btn btn-outline" data-cancelar="artigo">Cancelar</button>
+                            </div>
+                        </form>
+
+                        <div class="table-container" id="artigosTabelaBox">
+                            <table class="admin-table">
+                                <thead><tr><th>Título</th><th>Categoria</th><th>Data</th><th>Status</th><th>Ações</th></tr></thead>
+                                <tbody id="artigosTabela"></tbody>
+                            </table>
+                        </div>
+                        <div class="empty-state" id="artigosVazio" hidden>
+                            <i class="fas fa-book"></i>
+                            <h3>Nenhum artigo cadastrado</h3>
+                        </div>
+                    </div>
+
+                    <!-- TEXTOS E DADOS -->
+                    <div data-panel="site" hidden>
+                        <form class="admin-form wide" id="siteForm" novalidate>
+                            <fieldset>
+                                <legend>Profissional</legend>
+                                <div class="form-group">
+                                    <label>Foto</label>
+                                    <div class="photo-field">
+                                        <img id="fotoPreview" class="photo-preview" alt="Foto do profissional">
+                                        <div>
+                                            <input type="file" id="fotoArquivo" accept="image/*" hidden>
+                                            <button type="button" class="btn btn-outline btn-small" id="fotoTrocar"><i class="fas fa-camera"></i> Trocar foto</button>
+                                            <button type="button" class="link-button" id="fotoRemover">Usar foto padrão</button>
+                                            <span class="field-hint">A imagem é reduzida automaticamente.</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="siteProfissional">Nome *</label>
+                                        <input type="text" id="siteProfissional" maxlength="100" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="siteProfissao">Profissão</label>
+                                        <input type="text" id="siteProfissao" maxlength="100">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="siteCrp">CRP</label>
+                                        <input type="text" id="siteCrp" maxlength="40" placeholder="CRP 06/123456">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="siteWhatsapp">WhatsApp para agendamentos</label>
+                                        <input type="tel" id="siteWhatsapp" maxlength="20" placeholder="5511987654321">
+                                        <span class="field-hint">Com 55 e DDD. Ex.: 55 11 98765-4321</span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="siteBio">Apresentação (página inicial)</label>
+                                    <textarea id="siteBio" rows="3" maxlength="800"></textarea>
+                                </div>
+                            </fieldset>
+
+                            <fieldset>
+                                <legend>Página inicial</legend>
+                                <div class="form-group">
+                                    <label for="siteHeroTitulo">Título principal</label>
+                                    <input type="text" id="siteHeroTitulo" maxlength="120">
+                                </div>
+                                <div class="form-group">
+                                    <label for="siteHeroSubtitulo">Subtítulo</label>
+                                    <textarea id="siteHeroSubtitulo" rows="2" maxlength="300"></textarea>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="siteCitacao">Citação</label>
+                                        <input type="text" id="siteCitacao" maxlength="300">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="siteCitacaoAutor">Autor da citação</label>
+                                        <input type="text" id="siteCitacaoAutor" maxlength="100">
+                                    </div>
+                                </div>
+                            </fieldset>
+
+                            <fieldset>
+                                <legend>Página "Sobre"</legend>
+                                <div class="form-group">
+                                    <label>Nossa missão</label>
+                                    <div id="sobreEditor" class="editor small"></div>
+                                </div>
+                            </fieldset>
+
+                            <fieldset>
+                                <legend>Agendamento</legend>
+                                <div class="form-group">
+                                    <label>Horários oferecidos no formulário</label>
+                                    <span class="field-hint" style="margin-bottom:10px;">Separe por vírgula (ex.: 08:00, 09:00, 14:30). Deixe vazio nos dias sem atendimento.</span>
+                                    <div class="horarios-grid" id="horariosGrid"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="siteHorariosTexto">Quadro "Horários Disponíveis"</label>
+                                    <textarea id="siteHorariosTexto" rows="2" maxlength="400"></textarea>
+                                    <span class="field-hint">Cada linha vira um parágrafo.</span>
+                                </div>
+                                <div class="form-group">
+                                    <label for="siteAtendimentoTexto">Quadro "Atendimento"</label>
+                                    <textarea id="siteAtendimentoTexto" rows="2" maxlength="400"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="siteSigiloTexto">Quadro "Sigilo"</label>
+                                    <textarea id="siteSigiloTexto" rows="2" maxlength="400"></textarea>
+                                </div>
+                            </fieldset>
+
+                            <p class="form-error" id="siteErro" role="alert" hidden></p>
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Salvar alterações</button>
+                            </div>
+                        </form>
+
+                        <div class="maintenance" id="importarBox" hidden>
+                            <h3><i class="fas fa-database"></i> Conteúdo inicial</h3>
+                            <p>O banco ainda está vazio. Importe os vídeos, artigos, textos e atividades de exemplo para começar a editar a partir deles.</p>
+                            <button type="button" class="btn btn-outline btn-small" id="importarBtn"><i class="fas fa-file-import"></i> Importar conteúdo inicial</button>
+                        </div>
+                    </div>
+
+                    <!-- ATIVIDADES -->
+                    <div data-panel="atividades" hidden>
+                        <form class="admin-form wide" id="atividadesForm" novalidate>
+                            <fieldset>
+                                <legend>Respiração guiada</legend>
+                                <span class="field-hint" style="margin-bottom:12px;">Nome da fase, instrução e duração em segundos (1 a 30).</span>
+                                <div id="fasesLista"></div>
+                                <div class="form-group">
+                                    <label for="beneficios">Benefícios</label>
+                                    <textarea id="beneficios" rows="4" maxlength="800"></textarea>
+                                    <span class="field-hint">Um por linha.</span>
+                                </div>
+                            </fieldset>
+
+                            <fieldset>
+                                <legend>Meditação guiada</legend>
+                                <div class="form-group" style="max-width:260px;">
+                                    <label for="duracaoEtapa">Duração de cada etapa (segundos)</label>
+                                    <input type="number" id="duracaoEtapa" min="10" max="300" step="5">
+                                </div>
+                                <div id="etapasLista"></div>
+                                <button type="button" class="btn btn-outline btn-small" id="etapaAdicionar"><i class="fas fa-plus"></i> Adicionar etapa</button>
+                            </fieldset>
+
+                            <p class="form-error" id="atividadesErro" role="alert" hidden></p>
+                            <div class="form-actions" style="margin-top:24px;">
+                                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Salvar alterações</button>
+                            </div>
+                        </form>
+                    </div>
+
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script src="../assets/js/layout.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+    <script type="module" src="../assets/js/admin.js"></script>
+</body>
+</html>

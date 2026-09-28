@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block title %}Diário de Gratidão{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <a href="{{ url_for('jogos.listar') }}" class="back-link"><i class="fas fa-arrow-left"></i> Voltar às atividades</a>
+        <h1><i class="fas fa-heart"></i> Diário de Gratidão</h1>
+        <p>Registre as coisas boas do seu dia e cultive a gratidão</p>
+    </div>
+</section>
+
+<section class="gratitude-section">
+    <div class="container">
+        <div class="gratitude-container">
+            <form class="gratitude-form" id="gratitudeForm">
+                <div class="form-group">
+                    <label>Como você está se sentindo hoje?</label>
+                    <div class="mood-selector">
+                        <label class="mood-option">
+                            <input type="radio" name="humor" value="1">
+                            <span class="mood-emoji">😢</span>
+                            <span class="mood-label">Muito mal</span>
+                        </label>
+                        <label class="mood-option">
+                            <input type="radio" name="humor" value="2">
+                            <span class="mood-emoji">😔</span>
+                            <span class="mood-label">Mal</span>
+                        </label>
+                        <label class="mood-option">
+                            <input type="radio" name="humor" value="3" checked>
+                            <span class="mood-emoji">😐</span>
+                            <span class="mood-label">Neutro</span>
+                        </label>
+                        <label class="mood-option">
+                            <input type="radio" name="humor" value="4">
+                            <span class="mood-emoji">🙂</span>
+                            <span class="mood-label">Bem</span>
+                        </label>
+                        <label class="mood-option">
+                            <input type="radio" name="humor" value="5">
+                            <span class="mood-emoji">😊</span>
+                            <span class="mood-label">Muito bem</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="gratidao"><i class="fas fa-pray"></i> Pelo que você é grato(a) hoje?</label>
+                    <textarea id="gratidao" name="gratidao" rows="3" placeholder="Ex: Sou grato pela minha família, pelo sol de hoje..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="texto"><i class="fas fa-pen"></i> Como foi seu dia? (opcional)</label>
+                    <textarea id="texto" name="texto" rows="4" placeholder="Escreva livremente sobre seus pensamentos e sentimentos..."></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-full">
+                    <i class="fas fa-save"></i> Salvar Entrada
+                </button>
+            </form>
+
+            {% if entradas %}
+            <div class="gratitude-history">
+                <h3><i class="fas fa-history"></i> Entradas Anteriores</h3>
+                {% for entrada in entradas %}
+                <div class="gratitude-entry">
+                    <div class="entry-header">
+                        <span class="entry-mood">
+                            {% if entrada.humor == 1 %}😢{% elif entrada.humor == 2 %}😔{% elif entrada.humor == 3 %}😐{% elif entrada.humor == 4 %}🙂{% else %}😊{% endif %}
+                        </span>
+                        <span class="entry-date">{{ entrada.criado_em.strftime('%d/%m/%Y %H:%M') }}</span>
+                    </div>
+                    {% if entrada.gratidao %}
+                    <p class="entry-gratitude"><strong>Gratidão:</strong> {{ entrada.gratidao }}</p>
+                    {% endif %}
+                    {% if entrada.texto %}
+                    <p class="entry-text">{{ entrada.texto }}</p>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.getElementById('gratitudeForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const formData = new FormData(this);
+
+    fetch('{{ url_for("jogos.salvar_gratidao") }}', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showNotification('Entrada salva com sucesso! Continue cultivando a gratidão.', 'sucesso');
+            this.reset();
+            document.querySelector('input[name="humor"][value="3"]').checked = true;
+        }
+    })
+    .catch(() => {
+        showNotification('Erro ao salvar. Tente novamente.', 'erro');
+    });
+});
+
+function showNotification(message, type) {
+    const notification = document.createElement('div');
+    notification.className = `flash-message flash-${type}`;
+    notification.innerHTML = `<i class="fas fa-${type === 'sucesso' ? 'check-circle' : 'exclamation-circle'}"></i><span>${message}</span>`;
+    document.body.appendChild(notification);
+    notification.style.position = 'fixed';
+    notification.style.top = '20px';
+    notification.style.right = '20px';
+    notification.style.zIndex = '9999';
+    setTimeout(() => {
+        notification.style.opacity = '0';
+        setTimeout(() => notification.remove(), 300);
+    }, 3000);
+}
+</script>
+{% endblock %}

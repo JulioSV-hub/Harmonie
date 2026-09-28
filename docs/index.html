@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%8C%BF%3C/text%3E%3C/svg%3E">
+    <title>Harmony - Seu Espaço de Bem-Estar</title>
+    <meta name="description" content="Um espaço seguro para cuidar da sua saúde mental, com recursos profissionais e acolhimento humano.">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body data-page="inicio" class="is-loading">
+    <div id="site-header"></div>
+
+    <main class="main-content">
+        <section class="hero">
+            <div class="container">
+                <div class="hero-content">
+                    <h1 id="heroTitulo" data-dyn>Você não está sozinho(a)</h1>
+                    <p class="hero-subtitle" id="heroSubtitulo" data-dyn>Um espaço seguro para cuidar da sua saúde mental, com recursos profissionais e acolhimento humano.</p>
+                    <div class="hero-actions">
+                        <a href="atividades.html" class="btn btn-primary"><i class="fas fa-heart"></i> Começar Agora</a>
+                        <a href="agendamento.html" class="btn btn-outline"><i class="fas fa-calendar"></i> Agendar Consulta</a>
+                    </div>
+                </div>
+                <div class="hero-visual">
+                    <div class="hero-circle">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="features">
+            <div class="container">
+                <h2 class="section-title">Como podemos te ajudar</h2>
+                <p class="section-subtitle">Recursos pensados com carinho para o seu bem-estar</p>
+
+                <div class="features-grid">
+                    <a href="videos.html" class="feature-card">
+                        <div class="feature-icon" style="background: var(--gradient-1);">
+                            <i class="fas fa-video"></i>
+                        </div>
+                        <h3>Desenvolvimento Pessoal</h3>
+                        <p>Conteúdo em vídeo sobre ansiedade, autoestima, mindfulness e mais.</p>
+                    </a>
+
+                    <a href="leitura.html" class="feature-card">
+                        <div class="feature-icon" style="background: var(--gradient-2);">
+                            <i class="fas fa-book-open"></i>
+                        </div>
+                        <h3>Material de Leitura</h3>
+                        <p>Artigos e reflexões escritos pelo profissional para seu crescimento.</p>
+                    </a>
+
+                    <a href="atividades.html" class="feature-card">
+                        <div class="feature-icon" style="background: var(--gradient-3);">
+                            <i class="fas fa-gamepad"></i>
+                        </div>
+                        <h3>Atividades Terapêuticas</h3>
+                        <p>Exercícios de respiração, diário de gratidão e meditação guiada.</p>
+                    </a>
+
+                    <a href="agendamento.html" class="feature-card">
+                        <div class="feature-icon" style="background: var(--gradient-4);">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <h3>Agendamento</h3>
+                        <p>Marque sua consulta de forma simples e rápida.</p>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section class="featured-section" id="destaque" hidden>
+            <div class="container">
+                <h2 class="section-title">Leitura em Destaque</h2>
+                <p class="section-subtitle">Um convite para começar a olhar para si com mais atenção</p>
+
+                <a class="featured-card" id="destaqueLink">
+                    <div class="featured-content">
+                        <span class="featured-badge"><i class="fas fa-star"></i> <span id="destaqueCategoria"></span></span>
+                        <h3 id="destaqueTitulo"></h3>
+                        <p id="destaqueResumo"></p>
+                        <div class="featured-meta">
+                            <span><i class="fas fa-user"></i> <span id="destaqueAutor"></span></span>
+                            <span class="featured-cta">Ler artigo completo <i class="fas fa-arrow-right"></i></span>
+                        </div>
+                    </div>
+                    <div class="featured-decoration">
+                        <i class="fas fa-book-open"></i>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <section class="cta-section">
+            <div class="container">
+                <div class="cta-card">
+                    <div class="cta-content">
+                        <h2>Precisa conversar?</h2>
+                        <p>Dar o primeiro passo é um ato de coragem. Estamos aqui para te acolher.</p>
+                        <a href="agendamento.html" class="btn btn-primary"><i class="fas fa-phone"></i> Agendar uma Consulta</a>
+                    </div>
+                    <div class="cta-decoration">
+                        <i class="fas fa-hands-holding-heart"></i>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="professional-section">
+            <div class="container">
+                <div class="professional-card" data-dyn>
+                    <div class="professional-photo">
+                        <img id="foto" src="assets/images/profissional.jpg" alt="Fernando Fernandes - Psicólogo" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="photo-placeholder" style="display:none;">
+                            <span id="iniciais">FF</span>
+                        </div>
+                    </div>
+                    <div class="professional-info">
+                        <span class="professional-badge"><i class="fas fa-user-md"></i> Seu Profissional</span>
+                        <h2 id="profissional">Fernando Fernandes</h2>
+                        <p class="professional-title" id="profissao">Psicólogo</p>
+                        <p class="professional-bio" id="bio">Profissional dedicado ao cuidado da saúde mental, com foco em acolhimento humanizado e técnicas terapêuticas baseadas em evidências. Aqui você encontra um espaço seguro para cuidar de si.</p>
+                        <a href="agendamento.html" class="btn btn-primary">
+                            <i class="fas fa-calendar-check"></i> Agendar Consulta
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="quote-section">
+            <div class="container">
+                <blockquote class="quote" data-dyn>
+                    <i class="fas fa-quote-left"></i>
+                    <p id="citacao">"A jornada de mil milhas começa com um único passo."</p>
+                    <cite id="citacaoAutor">— Lao Tzu</cite>
+                </blockquote>
+            </div>
+        </section>
+    </main>
+
+    <div id="site-footer"></div>
+
+    <script src="assets/js/layout.js"></script>
+    <script type="module">
+        import { getSite, listArtigos } from './assets/js/store.js';
+
+        function iniciais(nome) {
+            return nome.split(/\s+/).filter(Boolean).map(p => p[0]).slice(0, 2).join('').toUpperCase();
+        }
+
+        try {
+            const [site, artigos] = await Promise.all([getSite(), listArtigos()]);
+            const set = (id, text) => { document.getElementById(id).textContent = text; };
+
+            set('heroTitulo', site.heroTitulo);
+            set('heroSubtitulo', site.heroSubtitulo);
+            set('profissional', site.profissional);
+            set('profissao', site.profissao);
+            set('bio', site.bio);
+            set('iniciais', iniciais(site.profissional) || 'H');
+            set('citacao', `"${site.citacao}"`);
+            set('citacaoAutor', site.citacaoAutor ? `— ${site.citacaoAutor}` : '');
+            const foto = document.getElementById('foto');
+            foto.alt = `${site.profissional} - ${site.profissao}`;
+            if (site.fotoUrl) foto.src = site.fotoUrl;
+            window.Harmony.applySite(site);
+
+            const artigo = artigos.find(a => a.destaque) || artigos[0];
+            if (artigo) {
+                document.getElementById('destaqueLink').href = 'artigo.html?id=' + encodeURIComponent(artigo.id);
+                set('destaqueCategoria', artigo.categoria);
+                set('destaqueTitulo', artigo.titulo);
+                set('destaqueResumo', artigo.resumo);
+                set('destaqueAutor', artigo.autor);
+                document.getElementById('destaque').hidden = false;
+            }
+            window.Harmony.doneLoading();
+        } catch (e) {
+            window.Harmony.loadError(e);
+        }
+    </script>
+</body>
+</html>

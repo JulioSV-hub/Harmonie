@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block title %}Início{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="container">
+        <div class="hero-content">
+            <h1>Você não está sozinho(a)</h1>
+            <p class="hero-subtitle">Um espaço seguro para cuidar da sua saúde mental, com recursos profissionais e acolhimento humano.</p>
+            <div class="hero-actions">
+                <a href="{{ url_for('jogos.listar') }}" class="btn btn-primary"><i class="fas fa-heart"></i> Começar Agora</a>
+                <a href="{{ url_for('agendamento.index') }}" class="btn btn-outline"><i class="fas fa-calendar"></i> Agendar Consulta</a>
+            </div>
+        </div>
+        <div class="hero-visual">
+            <div class="hero-circle">
+                <i class="fas fa-brain"></i>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="features">
+    <div class="container">
+        <h2 class="section-title">Como podemos te ajudar</h2>
+        <p class="section-subtitle">Recursos pensados com carinho para o seu bem-estar</p>
+
+        <div class="features-grid">
+            <a href="{{ url_for('videos.listar') }}" class="feature-card">
+                <div class="feature-icon" style="background: var(--gradient-1);">
+                    <i class="fas fa-video"></i>
+                </div>
+                <h3>Desenvolvimento Pessoal</h3>
+                <p>Conteúdo em vídeo sobre ansiedade, autoestima, mindfulness e mais.</p>
+            </a>
+
+            <a href="{{ url_for('leitura.listar') }}" class="feature-card">
+                <div class="feature-icon" style="background: var(--gradient-2);">
+                    <i class="fas fa-book-open"></i>
+                </div>
+                <h3>Material de Leitura</h3>
+                <p>Artigos e reflexões escritos pelo profissional para seu crescimento.</p>
+            </a>
+
+            <a href="{{ url_for('jogos.listar') }}" class="feature-card">
+                <div class="feature-icon" style="background: var(--gradient-3);">
+                    <i class="fas fa-gamepad"></i>
+                </div>
+                <h3>Atividades Terapêuticas</h3>
+                <p>Exercícios de respiração, diário de gratidão e meditação guiada.</p>
+            </a>
+
+            <a href="{{ url_for('agendamento.index') }}" class="feature-card">
+                <div class="feature-icon" style="background: var(--gradient-4);">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                <h3>Agendamento</h3>
+                <p>Marque sua consulta de forma simples e rápida.</p>
+            </a>
+        </div>
+    </div>
+</section>
+
+{% if artigo_destaque %}
+<section class="featured-section">
+    <div class="container">
+        <h2 class="section-title">Leitura em Destaque</h2>
+        <p class="section-subtitle">Um convite para começar a olhar para si com mais atenção</p>
+
+        <a href="{{ url_for('leitura.ver_artigo', id=artigo_destaque.id) }}" class="featured-card">
+            <div class="featured-content">
+                <span class="featured-badge"><i class="fas fa-star"></i> {{ artigo_destaque.categoria }}</span>
+                <h3>{{ artigo_destaque.titulo }}</h3>
+                <p>{{ artigo_destaque.resumo }}</p>
+                <div class="featured-meta">
+                    <span><i class="fas fa-user"></i> {{ artigo_destaque.autor }}</span>
+                    <span class="featured-cta">Ler artigo completo <i class="fas fa-arrow-right"></i></span>
+                </div>
+            </div>
+            <div class="featured-decoration">
+                <i class="fas fa-book-open"></i>
+            </div>
+        </a>
+    </div>
+</section>
+{% endif %}
+
+<section class="cta-section">
+    <div class="container">
+        <div class="cta-card">
+            <div class="cta-content">
+                <h2>Precisa conversar?</h2>
+                <p>Dar o primeiro passo é um ato de coragem. Estamos aqui para te acolher.</p>
+                <a href="{{ url_for('agendamento.index') }}" class="btn btn-primary"><i class="fas fa-phone"></i> Agendar uma Consulta</a>
+            </div>
+            <div class="cta-decoration">
+                <i class="fas fa-hands-holding-heart"></i>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="professional-section">
+    <div class="container">
+        <div class="professional-card">
+            <div class="professional-photo">
+                {% set img_path = 'images/profissional.jpg' %}
+                <img src="{{ url_for('static', filename=img_path) }}" alt="Fernando Fernandes - Psicólogo" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div class="photo-placeholder" style="display:none;">
+                    <span>FF</span>
+                </div>
+            </div>
+            <div class="professional-info">
+                <span class="professional-badge"><i class="fas fa-user-md"></i> Seu Profissional</span>
+                <h2>Fernando Fernandes</h2>
+                <p class="professional-title">Psicólogo</p>
+                <p class="professional-bio">Profissional dedicado ao cuidado da saúde mental, com foco em acolhimento humanizado e técnicas terapêuticas baseadas em evidências. Aqui você encontra um espaço seguro para cuidar de si.</p>
+                <a href="{{ url_for('agendamento.index') }}" class="btn btn-primary">
+                    <i class="fas fa-calendar-check"></i> Agendar Consulta
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="quote-section">
+    <div class="container">
+        <blockquote class="quote">
+            <i class="fas fa-quote-left"></i>
+            <p>"A jornada de mil milhas começa com um único passo."</p>
+            <cite>— Lao Tzu</cite>
+        </blockquote>
+    </div>
+</section>
+{% endblock %}

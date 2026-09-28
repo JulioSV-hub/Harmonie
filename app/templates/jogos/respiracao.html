@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}Respiração Guiada{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <a href="{{ url_for('jogos.listar') }}" class="back-link"><i class="fas fa-arrow-left"></i> Voltar às atividades</a>
+        <h1><i class="fas fa-wind"></i> Respiração Guiada</h1>
+        <p>Técnica 4-7-8: Inspire por 4s, segure por 7s, expire por 8s</p>
+    </div>
+</section>
+
+<section class="breathing-section">
+    <div class="container">
+        <div class="breathing-container">
+            <div class="breathing-circle" id="breathingCircle">
+                <span class="breathing-text" id="breathingText">Iniciar</span>
+                <span class="breathing-timer" id="breathingTimer"></span>
+            </div>
+
+            <div class="breathing-controls">
+                <button id="startBtn" class="btn btn-primary" onclick="startBreathing()">
+                    <i class="fas fa-play"></i> Começar
+                </button>
+                <button id="stopBtn" class="btn btn-outline" onclick="stopBreathing()" style="display:none;">
+                    <i class="fas fa-stop"></i> Parar
+                </button>
+            </div>
+
+            <div class="breathing-info">
+                <div class="info-card">
+                    <h4><i class="fas fa-lungs"></i> Como funciona</h4>
+                    <ul>
+                        <li><strong>Inspire (4s):</strong> Puxe o ar pelo nariz lentamente</li>
+                        <li><strong>Segure (7s):</strong> Mantenha o ar nos pulmões</li>
+                        <li><strong>Expire (8s):</strong> Solte o ar pela boca suavemente</li>
+                    </ul>
+                </div>
+                <div class="info-card">
+                    <h4><i class="fas fa-heart"></i> Benefícios</h4>
+                    <ul>
+                        <li>Reduz a ansiedade</li>
+                        <li>Melhora o sono</li>
+                        <li>Diminui o estresse</li>
+                        <li>Acalma o sistema nervoso</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+let breathingInterval = null;
+let currentPhase = 0;
+const phases = [
+    { text: 'Inspire...', duration: 4, class: 'inhale' },
+    { text: 'Segure...', duration: 7, class: 'hold' },
+    { text: 'Expire...', duration: 8, class: 'exhale' }
+];
+
+function startBreathing() {
+    document.getElementById('startBtn').style.display = 'none';
+    document.getElementById('stopBtn').style.display = 'inline-flex';
+    currentPhase = 0;
+    runPhase();
+}
+
+function runPhase() {
+    const circle = document.getElementById('breathingCircle');
+    const text = document.getElementById('breathingText');
+    const timer = document.getElementById('breathingTimer');
+    const phase = phases[currentPhase];
+
+    circle.className = 'breathing-circle ' + phase.class;
+    text.textContent = phase.text;
+
+    let countdown = phase.duration;
+    timer.textContent = countdown;
+
+    breathingInterval = setInterval(() => {
+        countdown--;
+        timer.textContent = countdown > 0 ? countdown : '';
+
+        if (countdown <= 0) {
+            clearInterval(breathingInterval);
+            currentPhase = (currentPhase + 1) % phases.length;
+            runPhase();
+        }
+    }, 1000);
+}
+
+function stopBreathing() {
+    clearInterval(breathingInterval);
+    document.getElementById('startBtn').style.display = 'inline-flex';
+    document.getElementById('stopBtn').style.display = 'none';
+    document.getElementById('breathingCircle').className = 'breathing-circle';
+    document.getElementById('breathingText').textContent = 'Iniciar';
+    document.getElementById('breathingTimer').textContent = '';
+}
+</script>
+{% endblock %}

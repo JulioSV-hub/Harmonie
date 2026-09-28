@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%8C%BF%3C/text%3E%3C/svg%3E">
+    <title>Agendar Consulta - Harmony</title>
+    <meta name="description" content="Agende sua consulta com o psicólogo Fernando Fernandes.">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body data-page="agendamento" class="is-loading">
+    <div id="site-header"></div>
+
+    <main class="main-content">
+        <section class="page-header">
+            <div class="container">
+                <h1><i class="fas fa-calendar-check"></i> Agendar Consulta</h1>
+                <p>Dê o primeiro passo para o seu bem-estar. Estamos aqui para te acolher.</p>
+            </div>
+        </section>
+
+        <section class="scheduling-section">
+            <div class="container">
+                <div class="scheduling-container">
+                    <div class="scheduling-info">
+                        <div class="info-card">
+                            <h3><i class="fas fa-clock"></i> Horários Disponíveis</h3>
+                            <div id="horariosTexto" data-dyn></div>
+                        </div>
+                        <div class="info-card">
+                            <h3><i class="fas fa-map-marker-alt"></i> Atendimento</h3>
+                            <div id="atendimentoTexto" data-dyn></div>
+                        </div>
+                        <div class="info-card">
+                            <h3><i class="fas fa-shield-alt"></i> Sigilo</h3>
+                            <div id="sigiloTexto" data-dyn></div>
+                        </div>
+                    </div>
+
+                    <form class="scheduling-form" id="agendamentoForm" novalidate>
+                        <h3>Preencha seus dados</h3>
+
+                        <div class="form-group">
+                            <label for="nome"><i class="fas fa-user"></i> Nome completo *</label>
+                            <input type="text" id="nome" name="nome" required maxlength="100" autocomplete="name" placeholder="Seu nome">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email"><i class="fas fa-envelope"></i> E-mail (opcional)</label>
+                            <input type="email" id="email" name="email" maxlength="120" autocomplete="email" placeholder="seu@email.com">
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="data"><i class="fas fa-calendar"></i> Data desejada *</label>
+                                <input type="date" id="data" name="data" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="horario"><i class="fas fa-clock"></i> Horário *</label>
+                                <select id="horario" name="horario" required disabled>
+                                    <option value="">Escolha a data</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="modalidade"><i class="fas fa-laptop-house"></i> Modalidade</label>
+                            <select id="modalidade" name="modalidade">
+                                <option value="Presencial ou online (tanto faz)">Tanto faz</option>
+                                <option value="Presencial">Presencial</option>
+                                <option value="Online">Online</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="motivo"><i class="fas fa-comment"></i> Motivo da consulta (opcional)</label>
+                            <textarea id="motivo" name="motivo" rows="3" maxlength="1000" placeholder="Se preferir, conte isso diretamente na consulta."></textarea>
+                        </div>
+
+                        <p class="form-error" id="erro" role="alert" hidden></p>
+
+                        <button type="submit" class="btn btn-primary btn-full">
+                            <i class="fab fa-whatsapp"></i> Enviar pelo WhatsApp
+                        </button>
+
+                        <p class="form-note">
+                            <i class="fas fa-info-circle"></i>
+                            O WhatsApp vai abrir com a mensagem pronta. É só enviar. A data é um pedido e será confirmada pelo profissional.
+                        </p>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="site-footer"></div>
+
+    <script src="assets/js/layout.js"></script>
+    <script type="module">
+        import { getSite, criarAgendamento } from './assets/js/store.js';
+
+        const { linesToParagraphs, showNotification } = window.Harmony;
+        let site = null;
+        const form = document.getElementById('agendamentoForm');
+        const dataInput = document.getElementById('data');
+        const horarioSelect = document.getElementById('horario');
+        const erro = document.getElementById('erro');
+        const enviarBtn = form.querySelector('button[type=submit]');
+
+        function isoLocal(d) {
+            const pad = n => String(n).padStart(2, '0');
+            return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+        }
+
+        function parseLocal(iso) {
+            const [a, m, d] = iso.split('-').map(Number);
+            return new Date(a, m - 1, d);
+        }
+
+        const hoje = new Date();
+        dataInput.min = isoLocal(hoje);
+        const limite = new Date(hoje);
+        limite.setMonth(limite.getMonth() + 6);
+        dataInput.max = isoLocal(limite);
+
+        // Horários disponíveis dependem do dia da semana; no dia de hoje, só os que ainda não passaram.
+        function horariosDisponiveis(iso) {
+            const dia = parseLocal(iso);
+            let lista = [...((site?.horarios || {})[dia.getDay()] || [])].sort();
+            if (iso === isoLocal(new Date())) {
+                const agora = new Date();
+                const minutosAgora = agora.getHours() * 60 + agora.getMinutes();
+                lista = lista.filter(h => {
+                    const [hh, mm] = h.split(':').map(Number);
+                    return hh * 60 + mm > minutosAgora + 60;
+                });
+            }
+            return lista;
+        }
+
+        dataInput.addEventListener('change', () => {
+            const anterior = horarioSelect.value;
+            horarioSelect.innerHTML = '';
+            if (!dataInput.value) {
+                horarioSelect.disabled = true;
+                horarioSelect.add(new Option('Escolha a data', ''));
+                return;
+            }
+            const lista = horariosDisponiveis(dataInput.value);
+            horarioSelect.disabled = lista.length === 0;
+            horarioSelect.add(new Option(lista.length ? 'Selecione' : 'Sem horários neste dia', ''));
+            lista.forEach(h => horarioSelect.add(new Option(h, h)));
+            if (lista.includes(anterior)) horarioSelect.value = anterior;
+        });
+
+        function mostrarErro(msg, campo) {
+            form.querySelectorAll('[aria-invalid]').forEach(el => el.removeAttribute('aria-invalid'));
+            erro.textContent = msg;
+            erro.hidden = !msg;
+            if (campo) {
+                campo.setAttribute('aria-invalid', 'true');
+                campo.focus();
+            }
+        }
+
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+            if (!site) return;
+            const nome = form.nome.value.trim();
+            const email = form.email.value.trim();
+            const data = dataInput.value;
+            const horario = horarioSelect.value;
+            const modalidade = form.modalidade.value;
+            const motivo = form.motivo.value.trim();
+
+            if (nome.length < 2) return mostrarErro('Informe seu nome.', form.nome);
+            if (email && !form.email.checkValidity()) return mostrarErro('E-mail inválido.', form.email);
+            if (!data) return mostrarErro('Escolha a data desejada.', dataInput);
+            if (data < dataInput.min || data > dataInput.max) {
+                return mostrarErro('Escolha uma data entre hoje e os próximos 6 meses.', dataInput);
+            }
+            if (!horariosDisponiveis(data).length) {
+                return mostrarErro('Não há atendimento neste dia. Escolha outra data.', dataInput);
+            }
+            if (!horario) return mostrarErro('Escolha um horário.', horarioSelect);
+
+            const numero = String(site.whatsapp || '').replace(/\D/g, '');
+            if (numero.length < 12) {
+                return mostrarErro('O agendamento pelo WhatsApp ainda não está configurado. Tente novamente mais tarde.');
+            }
+            mostrarErro('');
+
+            const [a, m, d] = data.split('-');
+            const diaSemana = parseLocal(data).toLocaleDateString('pt-BR', { weekday: 'long' });
+            const linhas = [
+                `Olá, ${site.profissional}! Gostaria de agendar uma consulta.`,
+                '',
+                `*Nome:* ${nome}`,
+                email ? `*E-mail:* ${email}` : null,
+                `*Data desejada:* ${d}/${m}/${a} (${diaSemana})`,
+                `*Horário:* ${horario}`,
+                `*Modalidade:* ${modalidade}`,
+                motivo ? `*Motivo:* ${motivo}` : null,
+            ].filter(l => l !== null);
+
+            // Registra o pedido no painel e, na mesma ação do clique, abre o WhatsApp
+            // (abrir depois de aguardar a gravação faria o navegador bloquear a janela).
+            const gravacao = criarAgendamento({ nome, email, data, horario, modalidade, motivo });
+            window.open(`https://wa.me/${numero}?text=${encodeURIComponent(linhas.join('\n'))}`, '_blank', 'noopener');
+
+            if (gravacao) {
+                enviarBtn.disabled = true;
+                gravacao
+                    .then(() => {
+                        form.reset();
+                        horarioSelect.innerHTML = '';
+                        horarioSelect.add(new Option('Escolha a data', ''));
+                        horarioSelect.disabled = true;
+                        showNotification('Pedido registrado! Envie a mensagem no WhatsApp para concluir.');
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        showNotification('O WhatsApp foi aberto, mas não conseguimos registrar o pedido aqui. Envie a mensagem normalmente.', 'info');
+                    })
+                    .finally(() => { enviarBtn.disabled = false; });
+            }
+        });
+
+        try {
+            site = await getSite();
+            window.Harmony.applySite(site);
+            document.getElementById('horariosTexto').innerHTML = linesToParagraphs(site.horariosTexto);
+            document.getElementById('atendimentoTexto').innerHTML = linesToParagraphs(site.atendimentoTexto);
+            document.getElementById('sigiloTexto').innerHTML = linesToParagraphs(site.sigiloTexto);
+            window.Harmony.doneLoading();
+        } catch (e) {
+            enviarBtn.disabled = true;
+            window.Harmony.loadError(e);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%8C%BF%3C/text%3E%3C/svg%3E">
+    <title>Material de Leitura - Harmony</title>
+    <meta name="description" content="Artigos e reflexões para seu crescimento pessoal.">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body data-page="leitura" class="is-loading">
+    <div id="site-header"></div>
+
+    <main class="main-content">
+        <section class="page-header">
+            <div class="container">
+                <h1><i class="fas fa-book-open"></i> Material de Leitura</h1>
+                <p>Artigos e reflexões para seu crescimento pessoal</p>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <div class="container">
+                <div class="filter-bar" id="filtros"></div>
+                <div class="articles-grid" id="lista"></div>
+                <div class="empty-state" id="vazio" hidden>
+                    <i class="fas fa-book"></i>
+                    <h3>Nenhum artigo disponível ainda</h3>
+                    <p>O profissional está preparando material especial para você. Volte em breve!</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="site-footer"></div>
+
+    <script src="assets/js/layout.js"></script>
+    <script type="module">
+        import { getSite, listArtigos } from './assets/js/store.js';
+
+        {
+            const { escapeHtml, formatDate, setupCategoryFilter } = window.Harmony;
+            const lista = document.getElementById('lista');
+            const vazio = document.getElementById('vazio');
+
+            // Resumo: usa o campo "resumo" ou o início do texto, sem as tags HTML.
+            function resumo(artigo) {
+                if (artigo.resumo) return artigo.resumo;
+                // DOMParser não executa scripts nem carrega imagens do conteúdo.
+                const doc = new DOMParser().parseFromString(artigo.conteudo || '', 'text/html');
+                const texto = doc.body.textContent.trim().replace(/\s+/g, ' ');
+                return texto.length > 150 ? texto.slice(0, 150) + '…' : texto;
+            }
+
+            function render(artigos) {
+                vazio.hidden = artigos.length > 0;
+                lista.innerHTML = artigos.map(a => `
+                    <div class="article-card">
+                        <div class="article-category">${escapeHtml(a.categoria)}</div>
+                        <h3>${escapeHtml(a.titulo)}</h3>
+                        <p>${escapeHtml(resumo(a))}</p>
+                        <div class="article-meta">
+                            <span><i class="fas fa-user"></i> ${escapeHtml(a.autor)}</span>
+                            <span><i class="fas fa-calendar"></i> ${formatDate(a.data)}</span>
+                        </div>
+                        <a href="artigo.html?id=${encodeURIComponent(a.id)}" class="btn btn-small">
+                            <i class="fas fa-arrow-right"></i> Ler Artigo
+                        </a>
+                    </div>`
+                ).join('');
+            }
+
+            try {
+                const [site, artigos] = await Promise.all([getSite(), listArtigos()]);
+                window.Harmony.applySite(site);
+                setupCategoryFilter(document.getElementById('filtros'), artigos, render);
+                window.Harmony.doneLoading();
+            } catch (e) {
+                window.Harmony.loadError(e);
+            }
+        }
+    </script>
+</body>
+</html>

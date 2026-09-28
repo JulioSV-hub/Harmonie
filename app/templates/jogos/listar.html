@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Atividades Terapêuticas{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1><i class="fas fa-gamepad"></i> Atividades Terapêuticas</h1>
+        <p>Exercícios interativos para cuidar do seu bem-estar emocional</p>
+    </div>
+</section>
+
+<section class="content-section">
+    <div class="container">
+        <div class="games-grid">
+            <a href="{{ url_for('jogos.respiracao') }}" class="game-card">
+                <div class="game-icon breathing">
+                    <i class="fas fa-wind"></i>
+                </div>
+                <h3>Respiração Guiada</h3>
+                <p>Exercício de respiração 4-7-8 para acalmar a mente e reduzir a ansiedade.</p>
+                <span class="game-duration"><i class="fas fa-clock"></i> 5 minutos</span>
+            </a>
+
+            <a href="{{ url_for('jogos.gratidao') }}" class="game-card">
+                <div class="game-icon gratitude">
+                    <i class="fas fa-heart"></i>
+                </div>
+                <h3>Diário de Gratidão</h3>
+                <p>Registre coisas boas do seu dia e cultive um olhar mais positivo sobre a vida.</p>
+                <span class="game-duration"><i class="fas fa-clock"></i> 10 minutos</span>
+            </a>
+
+            <a href="{{ url_for('jogos.meditacao') }}" class="game-card">
+                <div class="game-icon meditation">
+                    <i class="fas fa-om"></i>
+                </div>
+                <h3>Meditação Guiada</h3>
+                <p>Meditação mindfulness para conexão com o momento presente.</p>
+                <span class="game-duration"><i class="fas fa-clock"></i> 10 minutos</span>
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}

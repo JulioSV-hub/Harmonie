@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%8C%BF%3C/text%3E%3C/svg%3E">
+    <title>Artigo - Harmony</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body data-page="leitura">
+    <div id="site-header"></div>
+
+    <main class="main-content">
+        <section class="page-header">
+            <div class="container">
+                <a href="leitura.html" class="back-link"><i class="fas fa-arrow-left"></i> Voltar aos artigos</a>
+            </div>
+        </section>
+
+        <section class="article-detail">
+            <div class="container">
+                <article class="article-full" id="artigo" hidden>
+                    <div class="article-header">
+                        <span class="article-category-badge" id="categoria"></span>
+                        <h1 id="titulo"></h1>
+                        <div class="article-meta">
+                            <span><i class="fas fa-user"></i> <span id="autor"></span></span>
+                            <span><i class="fas fa-calendar"></i> <span id="data"></span></span>
+                        </div>
+                    </div>
+                    <div class="article-body" id="conteudo"></div>
+                </article>
+
+                <div class="empty-state" id="naoEncontrado" hidden>
+                    <i class="fas fa-book"></i>
+                    <h3>Artigo não encontrado</h3>
+                    <p><a href="leitura.html">Veja todos os artigos</a></p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="site-footer"></div>
+
+    <script src="assets/js/layout.js"></script>
+    <script type="module">
+        import DOMPurify from 'https://cdn.jsdelivr.net/npm/dompurify@3.4.16/dist/purify.es.mjs';
+        import { getSite, getArtigo } from './assets/js/store.js';
+
+        try {
+            const id = new URLSearchParams(location.search).get('id');
+            const [site, artigo] = await Promise.all([getSite(), getArtigo(id)]);
+            window.Harmony.applySite(site);
+
+            if (!artigo) {
+                document.getElementById('naoEncontrado').hidden = false;
+            } else {
+                document.title = artigo.titulo + ' - Harmony';
+                document.getElementById('categoria').textContent = artigo.categoria;
+                document.getElementById('titulo').textContent = artigo.titulo;
+                document.getElementById('autor').textContent = artigo.autor;
+                document.getElementById('data').textContent = window.Harmony.formatDate(artigo.data);
+                document.getElementById('conteudo').innerHTML = DOMPurify.sanitize(artigo.conteudo);
+                document.getElementById('artigo').hidden = false;
+            }
+            window.Harmony.doneLoading();
+        } catch (e) {
+            window.Harmony.loadError(e);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%8C%BF%3C/text%3E%3C/svg%3E">
+    <title>Página não encontrada - Harmony</title>
+    <style>
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; color: #3D4A44; background: #FAFBF9;
+               display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; text-align: center; }
+        h1 { font-family: 'Playfair Display', Georgia, serif; font-weight: 500; }
+        a { color: #6C9A8B; }
+    </style>
+</head>
+<body>
+    <main>
+        <h1>Página não encontrada</h1>
+        <p>O endereço pode ter mudado.</p>
+        <p><a id="home" href="./">Voltar para o início</a></p>
+    </main>
+    <script>
+        // No GitHub Pages de projeto o site fica em /<repositorio>/; aponta o link para a raiz certa.
+        const partes = location.pathname.split('/').filter(Boolean);
+        if (location.hostname.endsWith('github.io') && partes.length) {
+            document.getElementById('home').href = '/' + partes[0] + '/';
+        }
+    </script>
+</body>
+</html>

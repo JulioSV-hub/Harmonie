@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}Novo Vídeo{% endblock %}
+
+{% block content %}
+<section class="admin-header">
+    <div class="container">
+        <div class="admin-title">
+            <h1><i class="fas fa-plus-circle"></i> Novo Vídeo</h1>
+        </div>
+        <a href="{{ url_for('admin.videos') }}" class="btn btn-outline btn-small">
+            <i class="fas fa-arrow-left"></i> Voltar
+        </a>
+    </div>
+</section>
+
+<section class="admin-content">
+    <div class="container">
+        <form class="admin-form" method="POST" action="{{ url_for('admin.novo_video') }}">
+            <div class="form-group">
+                <label for="titulo">Título do Vídeo *</label>
+                <input type="text" id="titulo" name="titulo" required placeholder="Ex: Como lidar com a ansiedade">
+            </div>
+
+            <div class="form-group">
+                <label for="descricao">Descrição</label>
+                <textarea id="descricao" name="descricao" rows="3" placeholder="Breve descrição do conteúdo do vídeo"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="url_youtube">URL do YouTube *</label>
+                <input type="url" id="url_youtube" name="url_youtube" required placeholder="https://www.youtube.com/watch?v=...">
+            </div>
+
+            <div class="form-group">
+                <label for="categoria">Categoria *</label>
+                <select id="categoria" name="categoria" required>
+                    <option value="">Selecione</option>
+                    <option value="Ansiedade">Ansiedade</option>
+                    <option value="Autoestima">Autoestima</option>
+                    <option value="Mindfulness">Mindfulness</option>
+                    <option value="Relacionamentos">Relacionamentos</option>
+                    <option value="Depressão">Depressão</option>
+                    <option value="Motivação">Motivação</option>
+                    <option value="Sono">Sono</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="thumbnail">URL da Thumbnail (opcional)</label>
+                <input type="url" id="thumbnail" name="thumbnail" placeholder="https://img.youtube.com/...">
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i> Salvar Vídeo
+            </button>
+        </form>
+    </div>
+</section>
+{% endblock %}

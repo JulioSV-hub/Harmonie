@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%8C%BF%3C/text%3E%3C/svg%3E">
+    <title>Desenvolvimento Pessoal - Harmony</title>
+    <meta name="description" content="Vídeos sobre ansiedade, autoestima, mindfulness e desenvolvimento pessoal.">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body data-page="videos" class="is-loading">
+    <div id="site-header"></div>
+
+    <main class="main-content">
+        <section class="page-header">
+            <div class="container">
+                <h1><i class="fas fa-video"></i> Desenvolvimento Pessoal</h1>
+                <p>Conteúdo selecionado pelo profissional para seu crescimento pessoal</p>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <div class="container">
+                <div class="filter-bar" id="filtros"></div>
+                <div class="video-grid" id="lista"></div>
+                <div class="empty-state" id="vazio" hidden>
+                    <i class="fas fa-film"></i>
+                    <h3>Nenhum vídeo disponível ainda</h3>
+                    <p>O profissional está preparando conteúdo especial para você. Volte em breve!</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="site-footer"></div>
+
+    <script src="assets/js/layout.js"></script>
+    <script type="module">
+        import { getSite, listVideos } from './assets/js/store.js';
+
+        {
+            const { escapeHtml, setupCategoryFilter, youtubeId } = window.Harmony;
+            const lista = document.getElementById('lista');
+            const vazio = document.getElementById('vazio');
+
+            function safeUrl(url) {
+                return /^https?:\/\//i.test(url) ? url : '#';
+            }
+
+            function render(videos) {
+                vazio.hidden = videos.length > 0;
+                lista.innerHTML = videos.map(v => {
+                    const id = youtubeId(v.youtube);
+                    const thumb = id
+                        ? `<img src="https://img.youtube.com/vi/${id}/hqdefault.jpg" alt="${escapeHtml(v.titulo)}" loading="lazy">`
+                        : `<div class="video-placeholder"><i class="fas fa-play-circle"></i></div>`;
+                    return `
+                    <div class="video-card">
+                        <div class="video-thumbnail">
+                            ${thumb}
+                            <span class="video-badge">${escapeHtml(v.categoria)}</span>
+                        </div>
+                        <div class="video-info">
+                            <h3>${escapeHtml(v.titulo)}</h3>
+                            <p>${escapeHtml(v.descricao)}</p>
+                            <a href="${escapeHtml(safeUrl(v.youtube))}" target="_blank" rel="noopener" class="btn btn-small">
+                                <i class="fas fa-play"></i> Assistir
+                            </a>
+                        </div>
+                    </div>`;
+                }).join('');
+            }
+
+            try {
+                const [site, videos] = await Promise.all([getSite(), listVideos()]);
+                window.Harmony.applySite(site);
+                setupCategoryFilter(document.getElementById('filtros'), videos, render);
+                window.Harmony.doneLoading();
+            } catch (e) {
+                window.Harmony.loadError(e);
+            }
+        }
+    </script>
+</body>
+</html>

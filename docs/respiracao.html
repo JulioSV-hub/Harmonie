@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%8C%BF%3C/text%3E%3C/svg%3E">
+    <title>Respiração Guiada - Harmony</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body data-page="atividades" class="is-loading">
+    <div id="site-header"></div>
+
+    <main class="main-content">
+        <section class="page-header">
+            <div class="container">
+                <a href="atividades.html" class="back-link"><i class="fas fa-arrow-left"></i> Voltar às atividades</a>
+                <h1><i class="fas fa-wind"></i> Respiração Guiada</h1>
+                <p id="subtitulo" data-dyn>Técnica 4-7-8: Inspire por 4s, segure por 7s, expire por 8s</p>
+            </div>
+        </section>
+
+        <section class="breathing-section">
+            <div class="container">
+                <div class="breathing-container">
+                    <div class="breathing-circle" id="breathingCircle" aria-live="polite">
+                        <span class="breathing-text" id="breathingText">Iniciar</span>
+                        <span class="breathing-timer" id="breathingTimer"></span>
+                    </div>
+
+                    <div class="breathing-controls">
+                        <button id="startBtn" class="btn btn-primary">
+                            <i class="fas fa-play"></i> Começar
+                        </button>
+                        <button id="stopBtn" class="btn btn-outline" style="display:none;">
+                            <i class="fas fa-stop"></i> Parar
+                        </button>
+                    </div>
+
+                    <div class="breathing-info">
+                        <div class="info-card">
+                            <h4><i class="fas fa-lungs"></i> Como funciona</h4>
+                            <ul id="comoFunciona" data-dyn></ul>
+                        </div>
+                        <div class="info-card">
+                            <h4><i class="fas fa-heart"></i> Benefícios</h4>
+                            <ul id="beneficios" data-dyn></ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="site-footer"></div>
+
+    <script src="assets/js/layout.js"></script>
+    <script type="module">
+        import { getSite, getAtividades } from './assets/js/store.js';
+
+        const { escapeHtml } = window.Harmony;
+        let breathingInterval = null;
+        let currentPhase = 0;
+        let phases = [];
+        const startBtn = document.getElementById('startBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const circle = document.getElementById('breathingCircle');
+        const text = document.getElementById('breathingText');
+        const timer = document.getElementById('breathingTimer');
+
+        function startBreathing() {
+            clearInterval(breathingInterval);
+            startBtn.style.display = 'none';
+            stopBtn.style.display = 'inline-flex';
+            currentPhase = 0;
+            runPhase();
+        }
+
+        function runPhase() {
+            const phase = phases[currentPhase];
+            circle.className = 'breathing-circle ' + phase.tipo;
+            text.textContent = phase.nome + '...';
+
+            let countdown = phase.duracao;
+            timer.textContent = countdown;
+
+            breathingInterval = setInterval(() => {
+                countdown--;
+                timer.textContent = countdown > 0 ? countdown : '';
+
+                if (countdown <= 0) {
+                    clearInterval(breathingInterval);
+                    currentPhase = (currentPhase + 1) % phases.length;
+                    runPhase();
+                }
+            }, 1000);
+        }
+
+        function stopBreathing() {
+            clearInterval(breathingInterval);
+            startBtn.style.display = 'inline-flex';
+            stopBtn.style.display = 'none';
+            circle.className = 'breathing-circle';
+            text.textContent = 'Iniciar';
+            timer.textContent = '';
+        }
+
+        startBtn.addEventListener('click', startBreathing);
+        stopBtn.addEventListener('click', stopBreathing);
+
+        try {
+            const [site, atividades] = await Promise.all([getSite(), getAtividades()]);
+            window.Harmony.applySite(site);
+            const { fases, beneficios } = atividades.respiracao;
+            phases = fases;
+
+            const tecnica = fases.map(f => f.duracao).join('-');
+            const passos = fases.map(f => `${f.nome.toLowerCase()} por ${f.duracao}s`).join(', ');
+            document.getElementById('subtitulo').textContent =
+                `Técnica ${tecnica}: ${passos.charAt(0).toUpperCase()}${passos.slice(1)}`;
+            document.getElementById('comoFunciona').innerHTML = fases.map(f =>
+                `<li><strong>${escapeHtml(f.nome)} (${f.duracao}s):</strong> ${escapeHtml(f.instrucao)}</li>`).join('');
+            document.getElementById('beneficios').innerHTML = beneficios.map(b =>
+                `<li>${escapeHtml(b)}</li>`).join('');
+            window.Harmony.doneLoading();
+        } catch (e) {
+            startBtn.disabled = true;
+            window.Harmony.loadError(e);
+        }
+    </script>
+</body>
+</html>

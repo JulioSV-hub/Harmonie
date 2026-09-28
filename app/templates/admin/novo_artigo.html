@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}Novo Artigo{% endblock %}
+
+{% block content %}
+<section class="admin-header">
+    <div class="container">
+        <div class="admin-title">
+            <h1><i class="fas fa-plus-circle"></i> Novo Artigo</h1>
+        </div>
+        <a href="{{ url_for('admin.artigos') }}" class="btn btn-outline btn-small">
+            <i class="fas fa-arrow-left"></i> Voltar
+        </a>
+    </div>
+</section>
+
+<section class="admin-content">
+    <div class="container">
+        <form class="admin-form" method="POST" action="{{ url_for('admin.novo_artigo') }}">
+            <div class="form-group">
+                <label for="titulo">Título do Artigo *</label>
+                <input type="text" id="titulo" name="titulo" required placeholder="Ex: 5 Formas de Lidar com a Ansiedade">
+            </div>
+
+            <div class="form-group">
+                <label for="resumo">Resumo</label>
+                <textarea id="resumo" name="resumo" rows="2" placeholder="Breve resumo que aparece na listagem"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="conteudo">Conteúdo *</label>
+                <textarea id="conteudo" name="conteudo" rows="12" required placeholder="Escreva o artigo completo aqui... (suporta HTML para formatação)"></textarea>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="categoria">Categoria *</label>
+                    <select id="categoria" name="categoria" required>
+                        <option value="">Selecione</option>
+                        <option value="Ansiedade">Ansiedade</option>
+                        <option value="Autoestima">Autoestima</option>
+                        <option value="Mindfulness">Mindfulness</option>
+                        <option value="Relacionamentos">Relacionamentos</option>
+                        <option value="Depressão">Depressão</option>
+                        <option value="Bem-estar">Bem-estar</option>
+                        <option value="Reflexão">Reflexão</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="autor">Autor</label>
+                    <input type="text" id="autor" name="autor" value="Fernando Fernandes" placeholder="Nome do autor">
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i> Publicar Artigo
+            </button>
+        </form>
+    </div>
+</section>
+{% endblock %}

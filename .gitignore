@@ -1,0 +1,18 @@
+# Banco local do protótipo Flask (contém agendamentos e usuário admin). Nunca publicar.
+*.db
+*.sqlite
+*.sqlite3
+
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env
+
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Firebase local
+.firebase/
+*-debug.log

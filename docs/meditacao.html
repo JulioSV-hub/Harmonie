@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%8C%BF%3C/text%3E%3C/svg%3E">
+    <title>Meditação Guiada - Harmony</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body data-page="atividades" class="is-loading">
+    <div id="site-header"></div>
+
+    <main class="main-content">
+        <section class="page-header">
+            <div class="container">
+                <a href="atividades.html" class="back-link"><i class="fas fa-arrow-left"></i> Voltar às atividades</a>
+                <h1><i class="fas fa-om"></i> Meditação Guiada</h1>
+                <p>Conecte-se com o momento presente</p>
+            </div>
+        </section>
+
+        <section class="meditation-section">
+            <div class="container">
+                <div class="meditation-container">
+                    <div class="meditation-player">
+                        <div class="meditation-visual">
+                            <div class="meditation-circle" id="meditationCircle">
+                                <i class="fas fa-om"></i>
+                            </div>
+                        </div>
+
+                        <div class="meditation-steps" id="meditationSteps" aria-live="polite" data-dyn>
+                        </div>
+
+                        <div class="meditation-controls">
+                            <button id="medStartBtn" class="btn btn-primary">
+                                <i class="fas fa-play"></i> Iniciar Meditação
+                            </button>
+                            <button id="medStopBtn" class="btn btn-outline" style="display:none;">
+                                <i class="fas fa-stop"></i> Encerrar
+                            </button>
+                            <div class="meditation-progress" id="medProgress" style="display:none;">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="progressFill"></div>
+                                </div>
+                                <span class="progress-time" id="progressTime">0:00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="site-footer"></div>
+
+    <script src="assets/js/layout.js"></script>
+    <script type="module">
+        import { getSite, getAtividades } from './assets/js/store.js';
+
+        const { escapeHtml } = window.Harmony;
+        let meditationInterval = null;
+        let currentStep = 0;
+        let totalTime = 0;
+        let stepDuration = 30;
+        let steps = [];
+        const container = document.getElementById('meditationSteps');
+        const startBtn = document.getElementById('medStartBtn');
+        const stopBtn = document.getElementById('medStopBtn');
+        const progress = document.getElementById('medProgress');
+        const circle = document.getElementById('meditationCircle');
+
+        function startMeditation() {
+            clearInterval(meditationInterval);
+            startBtn.style.display = 'none';
+            stopBtn.style.display = 'inline-flex';
+            progress.style.display = 'flex';
+            circle.classList.add('active');
+            currentStep = 0;
+            totalTime = 0;
+            updateProgress();
+            showStep(0);
+
+            meditationInterval = setInterval(() => {
+                totalTime++;
+                updateProgress();
+
+                if (totalTime % stepDuration === 0) {
+                    currentStep++;
+                    if (currentStep >= steps.length) {
+                        stopMeditation();
+                        window.Harmony.showNotification('Meditação concluída. Obrigado por cuidar de você.');
+                        return;
+                    }
+                    showStep(currentStep);
+                }
+            }, 1000);
+        }
+
+        function showStep(index) {
+            steps.forEach(s => s.classList.remove('active'));
+            if (steps[index]) steps[index].classList.add('active');
+        }
+
+        function updateProgress() {
+            const totalDuration = steps.length * stepDuration;
+            const percent = (totalTime / totalDuration) * 100;
+            document.getElementById('progressFill').style.width = percent + '%';
+
+            const minutes = Math.floor(totalTime / 60);
+            const seconds = totalTime % 60;
+            document.getElementById('progressTime').textContent =
+                `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function stopMeditation() {
+            clearInterval(meditationInterval);
+            startBtn.style.display = 'inline-flex';
+            stopBtn.style.display = 'none';
+            progress.style.display = 'none';
+            circle.classList.remove('active');
+            showStep(0);
+        }
+
+        startBtn.addEventListener('click', startMeditation);
+        stopBtn.addEventListener('click', stopMeditation);
+
+        try {
+            const [site, atividades] = await Promise.all([getSite(), getAtividades()]);
+            window.Harmony.applySite(site);
+            const { etapas, duracaoEtapa } = atividades.meditacao;
+            stepDuration = duracaoEtapa;
+            container.innerHTML = etapas.map((e, i) => `
+                <div class="step${i === 0 ? ' active' : ''}" data-step="${i}">
+                    <h3>${escapeHtml(e.titulo)}</h3>
+                    <p>${escapeHtml(e.texto)}</p>
+                </div>`).join('');
+            steps = [...container.querySelectorAll('.step')];
+            startBtn.disabled = steps.length === 0;
+            window.Harmony.doneLoading();
+        } catch (e) {
+            startBtn.disabled = true;
+            window.Harmony.loadError(e);
+        }
+    </script>
+</body>
+</html>

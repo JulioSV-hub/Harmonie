@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block title %}Meditação Guiada{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <a href="{{ url_for('jogos.listar') }}" class="back-link"><i class="fas fa-arrow-left"></i> Voltar às atividades</a>
+        <h1><i class="fas fa-om"></i> Meditação Guiada</h1>
+        <p>Conecte-se com o momento presente</p>
+    </div>
+</section>
+
+<section class="meditation-section">
+    <div class="container">
+        <div class="meditation-container">
+            <div class="meditation-player">
+                <div class="meditation-visual">
+                    <div class="meditation-circle" id="meditationCircle">
+                        <i class="fas fa-om"></i>
+                    </div>
+                </div>
+
+                <div class="meditation-steps" id="meditationSteps">
+                    <div class="step active" data-step="0">
+                        <h3>Preparação</h3>
+                        <p>Encontre uma posição confortável. Feche os olhos se desejar. Respire naturalmente.</p>
+                    </div>
+                    <div class="step" data-step="1">
+                        <h3>Atenção ao Corpo</h3>
+                        <p>Sinta o peso do seu corpo. Observe os pontos de contato com a cadeira ou o chão. Relaxe os ombros.</p>
+                    </div>
+                    <div class="step" data-step="2">
+                        <h3>Atenção à Respiração</h3>
+                        <p>Observe sua respiração natural. Não tente mudá-la. Apenas observe o ar entrando e saindo.</p>
+                    </div>
+                    <div class="step" data-step="3">
+                        <h3>Observar Pensamentos</h3>
+                        <p>Se pensamentos surgirem, apenas observe-os sem julgamento. Deixe-os passar como nuvens no céu.</p>
+                    </div>
+                    <div class="step" data-step="4">
+                        <h3>Gratidão</h3>
+                        <p>Traga à mente algo pelo qual você é grato(a). Sinta a gratidão no seu coração.</p>
+                    </div>
+                    <div class="step" data-step="5">
+                        <h3>Encerramento</h3>
+                        <p>Gentilmente traga sua atenção de volta. Mova os dedos das mãos e pés. Abra os olhos quando estiver pronto(a).</p>
+                    </div>
+                </div>
+
+                <div class="meditation-controls">
+                    <button id="medStartBtn" class="btn btn-primary" onclick="startMeditation()">
+                        <i class="fas fa-play"></i> Iniciar Meditação
+                    </button>
+                    <button id="medStopBtn" class="btn btn-outline" onclick="stopMeditation()" style="display:none;">
+                        <i class="fas fa-stop"></i> Encerrar
+                    </button>
+                    <div class="meditation-progress" id="medProgress" style="display:none;">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                        <span class="progress-time" id="progressTime">0:00</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+let meditationInterval = null;
+let currentStep = 0;
+let totalTime = 0;
+const stepDuration = 30; // 30 seconds per step
+const steps = document.querySelectorAll('.meditation-steps .step');
+
+function startMeditation() {
+    document.getElementById('medStartBtn').style.display = 'none';
+    document.getElementById('medStopBtn').style.display = 'inline-flex';
+    document.getElementById('medProgress').style.display = 'flex';
+    document.getElementById('meditationCircle').classList.add('active');
+    currentStep = 0;
+    totalTime = 0;
+    showStep(0);
+
+    meditationInterval = setInterval(() => {
+        totalTime++;
+        updateProgress();
+
+        if (totalTime % stepDuration === 0) {
+            currentStep++;
+            if (currentStep >= steps.length) {
+                stopMeditation();
+                return;
+            }
+            showStep(currentStep);
+        }
+    }, 1000);
+}
+
+function showStep(index) {
+    steps.forEach(s => s.classList.remove('active'));
+    if (steps[index]) steps[index].classList.add('active');
+}
+
+function updateProgress() {
+    const totalDuration = steps.length * stepDuration;
+    const percent = (totalTime / totalDuration) * 100;
+    document.getElementById('progressFill').style.width = percent + '%';
+
+    const minutes = Math.floor(totalTime / 60);
+    const seconds = totalTime % 60;
+    document.getElementById('progressTime').textContent =
+        `${minutes}:${seconds.toString().padStart(2, '0')}`;
+}
+
+function stopMeditation() {
+    clearInterval(meditationInterval);
+    document.getElementById('medStartBtn').style.display = 'inline-flex';
+    document.getElementById('medStopBtn').style.display = 'none';
+    document.getElementById('meditationCircle').classList.remove('active');
+    showStep(0);
+}
+</script>
+{% endblock %}

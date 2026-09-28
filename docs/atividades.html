@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%8C%BF%3C/text%3E%3C/svg%3E">
+    <title>Atividades Terapêuticas - Harmony</title>
+    <meta name="description" content="Respiração guiada, diário de gratidão e meditação mindfulness.">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body data-page="atividades" class="is-loading">
+    <div id="site-header"></div>
+
+    <main class="main-content">
+        <section class="page-header">
+            <div class="container">
+                <h1><i class="fas fa-gamepad"></i> Atividades Terapêuticas</h1>
+                <p>Exercícios interativos para cuidar do seu bem-estar emocional</p>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <div class="container">
+                <div class="games-grid">
+                    <a href="respiracao.html" class="game-card">
+                        <div class="game-icon breathing">
+                            <i class="fas fa-wind"></i>
+                        </div>
+                        <h3>Respiração Guiada</h3>
+                        <p>Exercício de respiração <span id="respTecnica" data-dyn>4-7-8</span> para acalmar a mente e reduzir a ansiedade.</p>
+                        <span class="game-duration"><i class="fas fa-clock"></i> 5 minutos</span>
+                    </a>
+
+                    <a href="gratidao.html" class="game-card">
+                        <div class="game-icon gratitude">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <h3>Diário de Gratidão</h3>
+                        <p>Registre coisas boas do seu dia e cultive um olhar mais positivo sobre a vida.</p>
+                        <span class="game-duration"><i class="fas fa-clock"></i> 10 minutos</span>
+                    </a>
+
+                    <a href="meditacao.html" class="game-card">
+                        <div class="game-icon meditation">
+                            <i class="fas fa-om"></i>
+                        </div>
+                        <h3>Meditação Guiada</h3>
+                        <p>Meditação mindfulness para conexão com o momento presente.</p>
+                        <span class="game-duration"><i class="fas fa-clock"></i> <span id="medDuracao" data-dyn>3 minutos</span></span>
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="site-footer"></div>
+
+    <script src="assets/js/layout.js"></script>
+    <script type="module">
+        import { getSite, getAtividades } from './assets/js/store.js';
+
+        try {
+            const [site, atividades] = await Promise.all([getSite(), getAtividades()]);
+            window.Harmony.applySite(site);
+            document.getElementById('respTecnica').textContent =
+                atividades.respiracao.fases.map(f => f.duracao).join('-');
+            const { etapas, duracaoEtapa } = atividades.meditacao;
+            const minutos = Math.max(1, Math.round(etapas.length * duracaoEtapa / 60));
+            document.getElementById('medDuracao').textContent = minutos + (minutos === 1 ? ' minuto' : ' minutos');
+            window.Harmony.doneLoading();
+        } catch (e) {
+            window.Harmony.loadError(e);
+        }
+    </script>
+</body>
+</html>

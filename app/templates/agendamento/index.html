@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}Agendar Consulta{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1><i class="fas fa-calendar-check"></i> Agendar Consulta</h1>
+        <p>Dê o primeiro passo para o seu bem-estar. Estamos aqui para te acolher.</p>
+    </div>
+</section>
+
+<section class="scheduling-section">
+    <div class="container">
+        <div class="scheduling-container">
+            <div class="scheduling-info">
+                <div class="info-card">
+                    <h3><i class="fas fa-clock"></i> Horários Disponíveis</h3>
+                    <p>Segunda a Sexta: 8h às 18h</p>
+                    <p>Sábado: 8h às 12h</p>
+                </div>
+                <div class="info-card">
+                    <h3><i class="fas fa-map-marker-alt"></i> Atendimento</h3>
+                    <p>Presencial e Online</p>
+                    <p>Primeira consulta: acolhimento e avaliação</p>
+                </div>
+                <div class="info-card">
+                    <h3><i class="fas fa-shield-alt"></i> Sigilo</h3>
+                    <p>Todas as informações são tratadas com total sigilo profissional, conforme o Código de Ética.</p>
+                </div>
+            </div>
+
+            <form class="scheduling-form" method="POST" action="{{ url_for('agendamento.agendar') }}">
+                <h3>Preencha seus dados</h3>
+
+                <div class="form-group">
+                    <label for="nome"><i class="fas fa-user"></i> Nome completo *</label>
+                    <input type="text" id="nome" name="nome" required placeholder="Seu nome">
+                </div>
+
+                <div class="form-group">
+                    <label for="email"><i class="fas fa-envelope"></i> E-mail *</label>
+                    <input type="email" id="email" name="email" required placeholder="seu@email.com">
+                </div>
+
+                <div class="form-group">
+                    <label for="telefone"><i class="fas fa-phone"></i> Telefone</label>
+                    <input type="tel" id="telefone" name="telefone" placeholder="(11) 99999-9999">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="data"><i class="fas fa-calendar"></i> Data desejada *</label>
+                        <input type="date" id="data" name="data" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="horario"><i class="fas fa-clock"></i> Horário *</label>
+                        <select id="horario" name="horario" required>
+                            <option value="">Selecione</option>
+                            <option value="08:00">08:00</option>
+                            <option value="09:00">09:00</option>
+                            <option value="10:00">10:00</option>
+                            <option value="11:00">11:00</option>
+                            <option value="13:00">13:00</option>
+                            <option value="14:00">14:00</option>
+                            <option value="15:00">15:00</option>
+                            <option value="16:00">16:00</option>
+                            <option value="17:00">17:00</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="motivo"><i class="fas fa-comment"></i> Motivo da consulta (opcional)</label>
+                    <textarea id="motivo" name="motivo" rows="3" placeholder="Se desejar, conte brevemente o que te motivou a buscar ajuda..."></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-full">
+                    <i class="fas fa-paper-plane"></i> Solicitar Agendamento
+                </button>
+
+                <p class="form-note">
+                    <i class="fas fa-info-circle"></i>
+                    Após o envio, entraremos em contato para confirmar o agendamento.
+                </p>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

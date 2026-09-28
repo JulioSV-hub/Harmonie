@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%8C%BF%3C/text%3E%3C/svg%3E">
+    <title>Sobre - Harmony</title>
+    <meta name="description" content="Conheça a missão do Harmony.">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body data-page="sobre" class="is-loading">
+    <div id="site-header"></div>
+
+    <main class="main-content">
+        <section class="page-header">
+            <div class="container">
+                <h1>Sobre o Harmony</h1>
+                <p>Conheça nossa missão e valores</p>
+            </div>
+        </section>
+
+        <section class="about-content">
+            <div class="container">
+                <div class="about-card">
+                    <h2>Nossa Missão</h2>
+                    <div id="sobre" data-dyn></div>
+                </div>
+                <div class="about-card">
+                    <h2>Privacidade</h2>
+                    <p>Este site não tem cadastro para visitantes. As entradas do Diário de Gratidão ficam salvas somente no seu navegador e nunca são enviadas.</p>
+                    <p>Os dados informados no pedido de agendamento (nome, data, horário e, se você preencher, e-mail e motivo) são enviados ao profissional pelo WhatsApp e registrados em sistema de acesso restrito a ele, apenas para organizar os atendimentos. Para pedir a exclusão desses dados, fale com o profissional.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="site-footer"></div>
+
+    <script src="assets/js/layout.js"></script>
+    <script type="module">
+        import DOMPurify from 'https://cdn.jsdelivr.net/npm/dompurify@3.4.16/dist/purify.es.mjs';
+        import { getSite } from './assets/js/store.js';
+
+        try {
+            const site = await getSite();
+            document.getElementById('sobre').innerHTML = DOMPurify.sanitize(site.sobreHtml);
+            window.Harmony.applySite(site);
+            window.Harmony.doneLoading();
+        } catch (e) {
+            window.Harmony.loadError(e);
+        }
+    </script>
+</body>
+</html>

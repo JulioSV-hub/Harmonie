@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Gerenciar Vídeos{% endblock %}
+
+{% block content %}
+<section class="admin-header">
+    <div class="container">
+        <div class="admin-title">
+            <h1><i class="fas fa-video"></i> Gerenciar Vídeos</h1>
+        </div>
+        <div class="admin-header-actions">
+            <a href="{{ url_for('admin.novo_video') }}" class="btn btn-primary btn-small">
+                <i class="fas fa-plus"></i> Novo Vídeo
+            </a>
+            <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline btn-small">
+                <i class="fas fa-arrow-left"></i> Voltar
+            </a>
+        </div>
+    </div>
+</section>
+
+<section class="admin-content">
+    <div class="container">
+        {% if videos %}
+        <div class="table-container">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Título</th>
+                        <th>Categoria</th>
+                        <th>Data</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for video in videos %}
+                    <tr>
+                        <td>{{ video.titulo }}</td>
+                        <td><span class="category-badge">{{ video.categoria }}</span></td>
+                        <td>{{ video.criado_em.strftime('%d/%m/%Y') }}</td>
+                        <td>
+                            <a href="{{ video.url_youtube }}" target="_blank" class="btn-action" title="Ver">
+                                <i class="fas fa-external-link-alt"></i>
+                            </a>
+                            <a href="{{ url_for('admin.excluir_video', id=video.id) }}" class="btn-action btn-cancel" title="Excluir" onclick="return confirm('Tem certeza?')">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="fas fa-film"></i>
+            <h3>Nenhum vídeo cadastrado</h3>
+            <a href="{{ url_for('admin.novo_video') }}" class="btn btn-primary">Adicionar Primeiro Vídeo</a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
