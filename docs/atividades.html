@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%8C%BF%3C/text%3E%3C/svg%3E">
-    <title>Atividades Terapêuticas - Harmony</title>
+    <title>Atividades Terapêuticas - Harmonie</title>
     <meta name="description" content="Respiração guiada, diário de gratidão e meditação mindfulness.">
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -65,15 +65,15 @@
 
         try {
             const [site, atividades] = await Promise.all([getSite(), getAtividades()]);
-            window.Harmony.applySite(site);
+            window.Harmonie.applySite(site);
             document.getElementById('respTecnica').textContent =
                 atividades.respiracao.fases.map(f => f.duracao).join('-');
             const { etapas, duracaoEtapa } = atividades.meditacao;
             const minutos = Math.max(1, Math.round(etapas.length * duracaoEtapa / 60));
             document.getElementById('medDuracao').textContent = minutos + (minutos === 1 ? ' minuto' : ' minutos');
-            window.Harmony.doneLoading();
+            window.Harmonie.doneLoading();
         } catch (e) {
-            window.Harmony.loadError(e);
+            window.Harmonie.loadError(e);
         }
     </script>
 </body>

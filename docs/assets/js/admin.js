@@ -10,7 +10,7 @@ import { app, db, isConfigured, emulator } from './firebase.js';
 import { DEFAULT_SITE, DEFAULT_ATIVIDADES } from './defaults.js';
 import { VIDEOS, ARTIGOS } from './seed-conteudo.js';
 
-const { escapeHtml, formatDate, showNotification, youtubeId } = window.Harmony;
+const { escapeHtml, formatDate, showNotification, youtubeId } = window.Harmonie;
 const $ = id => document.getElementById(id);
 
 const DIAS = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
@@ -545,7 +545,7 @@ trackDirty(siteForm);
 const sobreEditor = createEditor('#sobreEditor', () => dirtyForms.add('siteForm'));
 
 const SITE_CAMPOS = {
-    siteProfissional: 'profissional', siteProfissao: 'profissao', siteCrp: 'crp', siteWhatsapp: 'whatsapp',
+    siteProfissional: 'profissional', siteProfissao: 'profissao', siteRegistro: 'registro', siteWhatsapp: 'whatsapp',
     siteBio: 'bio', siteHeroTitulo: 'heroTitulo', siteHeroSubtitulo: 'heroSubtitulo', siteCitacao: 'citacao',
     siteCitacaoAutor: 'citacaoAutor', siteHorariosTexto: 'horariosTexto', siteAtendimentoTexto: 'atendimentoTexto',
     siteSigiloTexto: 'sigiloTexto',

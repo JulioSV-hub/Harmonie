@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%8C%BF%3C/text%3E%3C/svg%3E">
-    <title>Agendar Consulta - Harmony</title>
-    <meta name="description" content="Agende sua consulta com o psicólogo Fernando Fernandes.">
+    <title>Agendar Consulta - Harmonie</title>
+    <meta name="description" content="Agende sua sessão com o terapeuta integrativo Fernando Fernandes.">
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -103,7 +103,7 @@
     <script type="module">
         import { getSite, criarAgendamento } from './assets/js/store.js';
 
-        const { linesToParagraphs, showNotification } = window.Harmony;
+        const { linesToParagraphs, showNotification } = window.Harmonie;
         let site = null;
         const form = document.getElementById('agendamentoForm');
         const dataInput = document.getElementById('data');
@@ -232,14 +232,14 @@
 
         try {
             site = await getSite();
-            window.Harmony.applySite(site);
+            window.Harmonie.applySite(site);
             document.getElementById('horariosTexto').innerHTML = linesToParagraphs(site.horariosTexto);
             document.getElementById('atendimentoTexto').innerHTML = linesToParagraphs(site.atendimentoTexto);
             document.getElementById('sigiloTexto').innerHTML = linesToParagraphs(site.sigiloTexto);
-            window.Harmony.doneLoading();
+            window.Harmonie.doneLoading();
         } catch (e) {
             enviarBtn.disabled = true;
-            window.Harmony.loadError(e);
+            window.Harmonie.loadError(e);
         }
     </script>
 </body>

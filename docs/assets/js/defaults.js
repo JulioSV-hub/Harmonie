@@ -5,8 +5,8 @@ const HORARIOS_SEMANA = ['08:00', '09:00', '10:00', '11:00', '13:00', '14:00', '
 
 export const DEFAULT_SITE = {
     profissional: 'Fernando Fernandes',
-    profissao: 'Psicólogo',
-    crp: '',
+    profissao: 'Terapeuta Integrativo · Bacharel em Psicologia',
+    registro: '',  // Ex.: 'Terapeuta Integrativo' ou nº de registro; aparece no rodapé
     whatsapp: '',
     fotoUrl: '',
     bio: 'Profissional dedicado ao cuidado da saúde mental, com foco em acolhimento humanizado e técnicas terapêuticas baseadas em evidências. Aqui você encontra um espaço seguro para cuidar de si.',
@@ -14,7 +14,7 @@ export const DEFAULT_SITE = {
     heroSubtitulo: 'Um espaço seguro para cuidar da sua saúde mental, com recursos profissionais e acolhimento humano.',
     citacao: 'A jornada de mil milhas começa com um único passo.',
     citacaoAutor: 'Lao Tzu',
-    sobreHtml: '<p>O Harmony nasceu da vontade de tornar o cuidado com a saúde mental mais acessível e acolhedor. Acreditamos que todos merecem apoio profissional e recursos de qualidade para enfrentar os desafios da vida.</p>'
+    sobreHtml: '<p>O Harmonie nasceu da vontade de tornar o cuidado com a saúde mental mais acessível e acolhedor. Acreditamos que todos merecem apoio profissional e recursos de qualidade para enfrentar os desafios da vida.</p>'
         + '<p>Aqui você encontra um espaço seguro para explorar ferramentas terapêuticas, aprender sobre si mesmo e dar os primeiros passos rumo ao seu bem-estar emocional.</p>',
     horariosTexto: 'Segunda a Sexta: 8h às 18h\nSábado: 8h às 12h',
     atendimentoTexto: 'Presencial e Online\nPrimeira consulta: acolhimento e avaliação',

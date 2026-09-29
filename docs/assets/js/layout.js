@@ -22,7 +22,7 @@
             <div class="container nav-container">
                 <a href="index.html" class="nav-logo">
                     <i class="fas fa-spa"></i>
-                    <span>Harmony</span>
+                    <span>Harmonie</span>
                 </a>
                 <button class="nav-toggle" id="navToggle" aria-label="Abrir menu" aria-expanded="false">
                     <i class="fas fa-bars"></i>
@@ -52,7 +52,7 @@
             <div class="container">
                 <div class="footer-grid">
                     <div class="footer-section">
-                        <h3><i class="fas fa-spa"></i> Harmony</h3>
+                        <h3><i class="fas fa-spa"></i> Harmonie</h3>
                         <p>Seu espaço seguro para cuidar da saúde mental. Aqui você encontra recursos, apoio e acolhimento profissional.</p>
                         <p class="footer-note">Os conteúdos deste site não substituem acompanhamento profissional.</p>
                     </div>
@@ -75,7 +75,7 @@
                     </div>
                 </div>
                 <div class="footer-bottom">
-                    <p>&copy; ${ano} Harmony<span id="footerProfissional"></span>. Cuidando de você com carinho e profissionalismo.</p>
+                    <p>&copy; ${ano} Harmonie<span id="footerProfissional"></span>. Cuidando de você com carinho e profissionalismo.</p>
                     <p><a href="admin/" class="footer-note">Área do profissional</a></p>
                 </div>
             </div>
@@ -153,7 +153,7 @@
     function applySite(site) {
         const el = document.getElementById('footerProfissional');
         if (!el || !site) return;
-        el.textContent = [site.profissional, site.crp].filter(Boolean).map(s => ' · ' + s).join('');
+        el.textContent = [site.profissional, site.registro].filter(Boolean).map(s => ' · ' + s).join('');
     }
 
     // Texto com quebras de linha → parágrafos (conteúdo escapado).
@@ -173,7 +173,7 @@
         showNotification('Não foi possível carregar o conteúdo. Verifique sua conexão e recarregue a página.', 'erro');
     }
 
-    window.Harmony = {
+    window.Harmonie = {
         escapeHtml, formatDate, showNotification, setupCategoryFilter, youtubeId,
         applySite, linesToParagraphs, doneLoading, loadError,
     };

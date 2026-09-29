@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%8C%BF%3C/text%3E%3C/svg%3E">
-    <title>Sobre - Harmony</title>
-    <meta name="description" content="Conheça a missão do Harmony.">
+    <title>Sobre - Harmonie</title>
+    <meta name="description" content="Conheça a missão do Harmonie.">
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,7 +18,7 @@
     <main class="main-content">
         <section class="page-header">
             <div class="container">
-                <h1>Sobre o Harmony</h1>
+                <h1>Sobre o Harmonie</h1>
                 <p>Conheça nossa missão e valores</p>
             </div>
         </section>
@@ -48,10 +48,10 @@
         try {
             const site = await getSite();
             document.getElementById('sobre').innerHTML = DOMPurify.sanitize(site.sobreHtml);
-            window.Harmony.applySite(site);
-            window.Harmony.doneLoading();
+            window.Harmonie.applySite(site);
+            window.Harmonie.doneLoading();
         } catch (e) {
-            window.Harmony.loadError(e);
+            window.Harmonie.loadError(e);
         }
     </script>
 </body>

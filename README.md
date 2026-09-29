@@ -1,6 +1,6 @@
-# Harmony
+# Harmonie
 
-Site de saúde mental e bem-estar do psicólogo Fernando Fernandes. Tem vídeos, artigos, atividades terapêuticas (respiração, meditação e diário de gratidão), pedidos de agendamento pelo WhatsApp e um **painel admin com login** para o dono editar tudo.
+Site de saúde mental e bem-estar do terapeuta integrativo Fernando Fernandes. Tem vídeos, artigos, atividades terapêuticas (respiração, meditação e diário de gratidão), pedidos de agendamento pelo WhatsApp e um **painel admin com login** para o dono editar tudo.
 
 - **Site:** HTML, CSS e JavaScript puros, na pasta [`docs/`](docs/). Hospedado no GitHub Pages, sem etapa de build.
 - **Login e dados:** Firebase (Authentication e Firestore), no plano gratuito.
@@ -13,7 +13,7 @@ Site de saúde mental e bem-estar do psicólogo Fernando Fernandes. Tem vídeos,
 | Agendamentos | Ver pedidos, confirmar, cancelar, marcar como concluído e excluir |
 | Vídeos | Criar, editar e excluir (basta colar o link do YouTube) |
 | Artigos | Criar e editar com editor de texto formatado, rascunho ou publicado, destaque na página inicial |
-| Textos e dados | Nome, profissão, CRP, WhatsApp, foto, apresentação, textos da página inicial e da página Sobre, horários de atendimento |
+| Textos e dados | Nome, profissão, registro profissional, WhatsApp, foto, apresentação, textos da página inicial e da página Sobre, horários de atendimento |
 | Atividades | Fases e tempos da respiração, benefícios, etapas e duração da meditação |
 
 As alterações aparecem no site na hora.

@@ -1,6 +1,6 @@
 rules_version = '2';
 
-// Regras de acesso do Firestore do Harmony.
+// Regras de acesso do Firestore do Harmonie.
 // Público: lê conteúdo publicado e cria pedidos de agendamento.
 // Admin (usuário com documento em /admins/{uid}): lê e altera tudo.
 service cloud.firestore {

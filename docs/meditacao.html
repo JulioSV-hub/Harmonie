@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%8C%BF%3C/text%3E%3C/svg%3E">
-    <title>Meditação Guiada - Harmony</title>
+    <title>Meditação Guiada - Harmonie</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -62,7 +62,7 @@
     <script type="module">
         import { getSite, getAtividades } from './assets/js/store.js';
 
-        const { escapeHtml } = window.Harmony;
+        const { escapeHtml } = window.Harmonie;
         let meditationInterval = null;
         let currentStep = 0;
         let totalTime = 0;
@@ -93,7 +93,7 @@
                     currentStep++;
                     if (currentStep >= steps.length) {
                         stopMeditation();
-                        window.Harmony.showNotification('Meditação concluída. Obrigado por cuidar de você.');
+                        window.Harmonie.showNotification('Meditação concluída. Obrigado por cuidar de você.');
                         return;
                     }
                     showStep(currentStep);
@@ -131,7 +131,7 @@
 
         try {
             const [site, atividades] = await Promise.all([getSite(), getAtividades()]);
-            window.Harmony.applySite(site);
+            window.Harmonie.applySite(site);
             const { etapas, duracaoEtapa } = atividades.meditacao;
             stepDuration = duracaoEtapa;
             container.innerHTML = etapas.map((e, i) => `
@@ -141,10 +141,10 @@
                 </div>`).join('');
             steps = [...container.querySelectorAll('.step')];
             startBtn.disabled = steps.length === 0;
-            window.Harmony.doneLoading();
+            window.Harmonie.doneLoading();
         } catch (e) {
             startBtn.disabled = true;
-            window.Harmony.loadError(e);
+            window.Harmonie.loadError(e);
         }
     </script>
 </body>
