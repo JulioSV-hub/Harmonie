@@ -1,6 +1,7 @@
 // Painel admin: login (Firebase Auth) e edição do conteúdo (Firestore).
 import {
     getAuth, connectAuthEmulator, onAuthStateChanged, signInWithEmailAndPassword, signOut, sendPasswordResetEmail,
+    updatePassword, reauthenticateWithCredential, EmailAuthProvider,
 } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js';
 import {
     collection, doc, getDoc, getDocs, setDoc, updateDoc, deleteDoc, writeBatch, serverTimestamp, Timestamp,
@@ -21,8 +22,28 @@ const FOTO_PADRAO = '../assets/images/profissional.jpg';
 // Utilitários
 
 function showView(id) {
-    ['viewCarregando', 'viewNaoConfigurado', 'viewLogin', 'viewSemPermissao', 'viewPainel']
+    ['viewCarregando', 'viewNaoConfigurado', 'viewLogin', 'viewSemPermissao', 'viewTrocarSenha', 'viewPainel']
         .forEach(v => { $(v).hidden = v !== id; });
+    $('alterarSenhaBtn').hidden = id !== 'viewPainel';
+}
+
+// Botão "olho": mostra/oculta o conteúdo do campo de senha ao lado.
+document.querySelectorAll('.toggle-senha').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const input = btn.parentElement.querySelector('input');
+        const mostrar = input.type === 'password';
+        input.type = mostrar ? 'text' : 'password';
+        btn.querySelector('i').className = mostrar ? 'fas fa-eye-slash' : 'fas fa-eye';
+        const rotulo = mostrar ? 'Ocultar senha' : 'Mostrar senha';
+        btn.setAttribute('aria-label', rotulo);
+        btn.title = rotulo;
+        input.focus();
+    });
+});
+
+function ocultarSenhas(form) {
+    form.querySelectorAll('.password-field input').forEach(i => { i.type = 'password'; });
+    form.querySelectorAll('.toggle-senha i').forEach(i => { i.className = 'fas fa-eye'; });
 }
 
 function setError(el, msg) {
@@ -128,14 +149,106 @@ if (!isConfigured) {
                 showView('viewSemPermissao');
                 return;
             }
-            showView('viewPainel');
-            await loadAll();
+            if (await usandoSenhaProvisoria(user)) {
+                abrirTrocaSenha(true);
+                return;
+            }
+            await abrirPainel();
         } catch (err) {
             fail(err);
             showView('viewLogin');
         }
     });
 }
+
+let painelCarregado = false;
+async function abrirPainel() {
+    showView('viewPainel');
+    if (!painelCarregado) {
+        painelCarregado = true;
+        await loadAll();
+    }
+}
+
+// Senha provisória = nunca trocada desde que a conta foi criada no Console do Firebase.
+// Quem já redefiniu pelo "Esqueci minha senha" ou pelo painel não é obrigado a trocar de novo.
+async function usandoSenhaProvisoria(user) {
+    try {
+        const base = emulator ? 'http://127.0.0.1:9099/identitytoolkit.googleapis.com' : 'https://identitytoolkit.googleapis.com';
+        const resp = await fetch(`${base}/v1/accounts:lookup?key=${app.options.apiKey}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ idToken: await user.getIdToken() }),
+        });
+        if (!resp.ok) throw new Error(`accounts:lookup ${resp.status}`);
+        const info = (await resp.json()).users?.[0] || {};
+        const criada = Number(info.createdAt);
+        const senhaAlterada = Number(info.passwordUpdatedAt);
+        // Na criação as duas datas são iguais; qualquer troca posterior as separa.
+        return Boolean(criada && senhaAlterada) && senhaAlterada - criada < 2000;
+    } catch (err) {
+        // Falha na consulta não bloqueia o acesso; a troca segue disponível no botão "Senha".
+        console.warn('Não foi possível verificar a senha provisória.', err);
+        return false;
+    }
+}
+
+let trocaObrigatoria = false;
+function abrirTrocaSenha(obrigatoria) {
+    trocaObrigatoria = obrigatoria;
+    const form = $('trocarSenhaForm');
+    form.reset();
+    ocultarSenhas(form);
+    $('trocarSenhaUsuario').value = auth.currentUser?.email || '';
+    $('trocarSenhaTitulo').textContent = obrigatoria ? 'Crie sua senha' : 'Alterar senha';
+    $('trocarSenhaTexto').textContent = obrigatoria
+        ? 'Por segurança, troque a senha provisória antes de usar o painel.'
+        : 'Escolha uma nova senha para acessar o painel.';
+    $('trocarSenhaCancelar').hidden = obrigatoria;
+    setError($('trocarSenhaErro'), '');
+    showView('viewTrocarSenha');
+    $('senhaAtual').focus();
+}
+
+$('alterarSenhaBtn').addEventListener('click', () => {
+    if (!confirmDiscard()) return;
+    abrirTrocaSenha(false);
+});
+
+$('trocarSenhaCancelar').addEventListener('click', () => abrirPainel());
+
+$('trocarSenhaForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const erro = $('trocarSenhaErro');
+    const atual = $('senhaAtual').value;
+    const nova = $('senhaNova').value;
+    if (!atual) return setError(erro, 'Digite a senha atual.');
+    if (nova.length < 8 || !/[A-Za-z]/.test(nova) || !/\d/.test(nova)) {
+        return setError(erro, 'A nova senha precisa ter pelo menos 8 caracteres, com letras e números.');
+    }
+    if (nova === atual) return setError(erro, 'A nova senha precisa ser diferente da atual.');
+    if (nova !== $('senhaConfirmar').value) return setError(erro, 'A confirmação não confere com a nova senha.');
+    setError(erro, '');
+
+    await withBusy($('trocarSenhaForm').querySelector('button[type=submit]'), async () => {
+        const user = auth.currentUser;
+        try {
+            // Confirmar a senha atual também evita o erro de "login recente necessário".
+            await reauthenticateWithCredential(user, EmailAuthProvider.credential(user.email, atual));
+            await updatePassword(user, nova);
+            $('trocarSenhaForm').reset();
+            ocultarSenhas($('trocarSenhaForm'));
+            showNotification('Senha alterada com sucesso.');
+            await abrirPainel();
+        } catch (err) {
+            const code = err.code || '';
+            if (['auth/invalid-credential', 'auth/wrong-password'].includes(code)) setError(erro, 'Senha atual incorreta.');
+            else if (code === 'auth/weak-password' || code === 'auth/password-does-not-meet-requirements') setError(erro, 'Senha fraca. Use pelo menos 8 caracteres, com letras e números.');
+            else if (code === 'auth/too-many-requests') setError(erro, 'Muitas tentativas. Aguarde alguns minutos.');
+            else setError(erro, errorMessage(err));
+        }
+    });
+});
 
 $('loginForm').addEventListener('submit', async e => {
     e.preventDefault();
@@ -145,6 +258,7 @@ $('loginForm').addEventListener('submit', async e => {
         try {
             await signInWithEmailAndPassword(auth, $('loginEmail').value.trim(), $('loginSenha').value);
             $('loginSenha').value = '';
+            ocultarSenhas($('loginForm'));
         } catch (err) {
             const code = err.code || '';
             if (['auth/invalid-credential', 'auth/wrong-password', 'auth/user-not-found', 'auth/invalid-email'].includes(code)) {
@@ -177,6 +291,7 @@ $('esqueciBtn').addEventListener('click', async () => {
 $('sairBtn').addEventListener('click', () => {
     if (!confirmDiscard()) return;
     dirtyForms.clear();
+    painelCarregado = false;
     signOut(auth);
 });
 
@@ -460,6 +575,25 @@ function closeArtigoForm() {
 }
 
 $('artigoTitulo').addEventListener('input', updateArtigoEndereco);
+
+// Abre o artigo como ficará no site, sem salvar. O rascunho passa pelo localStorage deste navegador.
+$('artigoPreview').addEventListener('click', () => {
+    const conteudo = artigoEditor.get();
+    if (!conteudo) {
+        setError($('artigoErro'), 'Escreva o conteúdo do artigo para pré-visualizar.');
+        return;
+    }
+    setError($('artigoErro'), '');
+    localStorage.setItem('harmonie.preview', JSON.stringify({
+        titulo: $('artigoTitulo').value.trim() || '(Sem título)',
+        categoria: $('artigoCategoria').value.trim() || 'Sem categoria',
+        autor: $('artigoAutor').value.trim(),
+        data: $('artigoData').value || todayIso(),
+        conteudo,
+    }));
+    // Mesmo nome de janela: clicar de novo atualiza a aba de pré-visualização já aberta.
+    window.open('../artigo.html?preview=1', 'harmonie-preview');
+});
 $('artigoNovo').addEventListener('click', () => openArtigoForm(null));
 
 $('artigosTabela').addEventListener('click', async e => {

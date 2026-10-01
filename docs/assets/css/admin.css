@@ -331,3 +331,30 @@ button.btn-action {
         gap: 8px;
     }
 }
+
+/* Campo de senha com botão "olho" para mostrar/ocultar */
+.password-field {
+    position: relative;
+}
+
+.form-group .password-field input {
+    padding-right: 46px;
+}
+
+.toggle-senha {
+    position: absolute;
+    top: 50%;
+    right: 6px;
+    transform: translateY(-50%);
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+}
+
+.toggle-senha:hover, .toggle-senha:focus-visible {
+    color: var(--primary);
+}

@@ -24,6 +24,7 @@
             <div class="admin-topbar-actions">
                 <span class="admin-user" id="usuarioEmail"></span>
                 <a href="../index.html" class="btn btn-outline btn-small" target="_blank" rel="noopener"><i class="fas fa-external-link-alt"></i> <span>Ver site</span></a>
+                <button type="button" class="btn btn-outline btn-small" id="alterarSenhaBtn" hidden><i class="fas fa-key"></i> <span>Senha</span></button>
                 <button type="button" class="btn btn-outline btn-small" id="sairBtn" hidden><i class="fas fa-sign-out-alt"></i> <span>Sair</span></button>
             </div>
         </div>
@@ -65,7 +66,10 @@
                         </div>
                         <div class="form-group">
                             <label for="loginSenha"><i class="fas fa-lock"></i> Senha</label>
-                            <input type="password" id="loginSenha" required autocomplete="current-password" placeholder="Sua senha">
+                            <div class="password-field">
+                                <input type="password" id="loginSenha" required autocomplete="current-password" placeholder="Sua senha">
+                                <button type="button" class="toggle-senha" aria-label="Mostrar senha" title="Mostrar senha"><i class="fas fa-eye"></i></button>
+                            </div>
                         </div>
                         <p class="form-error" id="loginErro" role="alert" hidden></p>
                         <button type="submit" class="btn btn-primary btn-full">
@@ -91,6 +95,53 @@
                     </div>
                     <div class="auth-footer">
                         <small>Para liberar, o desenvolvedor cria o documento <code>admins/<span id="semPermissaoUid"></span></code> no Firestore.</small>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Troca de senha (obrigatória no primeiro acesso ou pelo botão "Senha") -->
+        <section class="auth-section" id="viewTrocarSenha" hidden>
+            <div class="container">
+                <div class="auth-card">
+                    <div class="auth-header">
+                        <i class="fas fa-key"></i>
+                        <h2 id="trocarSenhaTitulo">Crie sua senha</h2>
+                        <p id="trocarSenhaTexto">Por segurança, troque a senha provisória antes de usar o painel.</p>
+                    </div>
+
+                    <form class="auth-form" id="trocarSenhaForm" novalidate>
+                        <input type="email" id="trocarSenhaUsuario" autocomplete="username" hidden>
+                        <div class="form-group">
+                            <label for="senhaAtual"><i class="fas fa-lock"></i> Senha atual</label>
+                            <div class="password-field">
+                                <input type="password" id="senhaAtual" required autocomplete="current-password">
+                                <button type="button" class="toggle-senha" aria-label="Mostrar senha" title="Mostrar senha"><i class="fas fa-eye"></i></button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="senhaNova"><i class="fas fa-key"></i> Nova senha</label>
+                            <div class="password-field">
+                                <input type="password" id="senhaNova" required autocomplete="new-password" minlength="8">
+                                <button type="button" class="toggle-senha" aria-label="Mostrar senha" title="Mostrar senha"><i class="fas fa-eye"></i></button>
+                            </div>
+                            <span class="field-hint">Mínimo de 8 caracteres, com letras e números.</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="senhaConfirmar"><i class="fas fa-check"></i> Confirme a nova senha</label>
+                            <div class="password-field">
+                                <input type="password" id="senhaConfirmar" required autocomplete="new-password">
+                                <button type="button" class="toggle-senha" aria-label="Mostrar senha" title="Mostrar senha"><i class="fas fa-eye"></i></button>
+                            </div>
+                        </div>
+                        <p class="form-error" id="trocarSenhaErro" role="alert" hidden></p>
+                        <button type="submit" class="btn btn-primary btn-full">
+                            <i class="fas fa-save"></i> Salvar nova senha
+                        </button>
+                    </form>
+
+                    <div class="auth-footer">
+                        <button type="button" class="link-button" id="trocarSenhaCancelar" hidden>Voltar ao painel</button>
                     </div>
                 </div>
             </div>
@@ -245,6 +296,7 @@
                             <p class="form-error" id="artigoErro" role="alert" hidden></p>
                             <div class="form-actions">
                                 <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Salvar</button>
+                                <button type="button" class="btn btn-outline" id="artigoPreview"><i class="fas fa-eye"></i> Pré-visualizar</button>
                                 <button type="button" class="btn btn-outline" data-cancelar="artigo">Cancelar</button>
                             </div>
                         </form>

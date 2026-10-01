@@ -23,6 +23,10 @@
 
         <section class="article-detail">
             <div class="container">
+                <p class="privacy-note preview-note" id="previewAviso" hidden>
+                    <i class="fas fa-eye"></i>
+                    <span><strong>Pré-visualização.</strong> É assim que o artigo vai aparecer no site. Ele ainda não foi salvo nem publicado por esta tela. Feche esta aba para voltar ao painel.</span>
+                </p>
                 <article class="article-full" id="artigo" hidden>
                     <div class="article-header">
                         <span class="article-category-badge" id="categoria"></span>
@@ -51,10 +55,25 @@
         import DOMPurify from 'https://cdn.jsdelivr.net/npm/dompurify@3.4.16/dist/purify.es.mjs';
         import { getSite, getArtigo } from './assets/js/store.js';
 
+        function lerPreview() {
+            try {
+                const a = JSON.parse(localStorage.getItem('harmonie.preview'));
+                return a && typeof a.conteudo === 'string' ? a : null;
+            } catch {
+                return null;
+            }
+        }
+
         try {
-            const id = new URLSearchParams(location.search).get('id');
-            const [site, artigo] = await Promise.all([getSite(), getArtigo(id)]);
+            const params = new URLSearchParams(location.search);
+            // Pré-visualização do painel admin: o rascunho vem do localStorage deste navegador.
+            const preview = params.get('preview') === '1';
+            const [site, artigo] = await Promise.all([
+                getSite(),
+                preview ? Promise.resolve(lerPreview()) : getArtigo(params.get('id')),
+            ]);
             window.Harmonie.applySite(site);
+            document.getElementById('previewAviso').hidden = !(preview && artigo);
 
             if (!artigo) {
                 document.getElementById('naoEncontrado').hidden = false;

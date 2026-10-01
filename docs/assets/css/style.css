@@ -2115,3 +2115,14 @@ button.filter-tag {
 [hidden] {
     display: none !important;
 }
+
+.preview-note {
+    background: #FEF3C7;
+    color: #92400E;
+    max-width: 800px;
+    margin: 0 auto 24px;
+}
+
+.preview-note i {
+    color: #92400E;
+}

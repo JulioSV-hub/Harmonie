@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node --input-type=module -e \"import\\('./docs/assets/js/firebase-config.js'\\).then\\(m=>console.log\\('sintaxe ok, projectId =', m.firebaseConfig.projectId\\)\\)\")",
+      "Bash(curl -s \"https://firestore.googleapis.com/v1/projects/harmonie-site/databases/\\(default\\)/documents/config/site?key=AIzaSyC27gAmqxaJ7rk5HO4Yh6eA8jG51l1X3iA\")",
+      "Bash(curl -s -X POST \"https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyC27gAmqxaJ7rk5HO4Yh6eA8jG51l1X3iA\" -H \"Content-Type: application/json\" -d '{\"email\":\"teste-inexistente@example.com\",\"password\":\"x\",\"returnSecureToken\":true}')",
+      "Bash(curl -s -X POST https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyC27gAmqxaJ7rk5HO4Yh6eA8jG51l1X3iA -H 'Content-Type: application/json' -d '{\"email\":\"teste-inexistente@example.com\",\"password\":\"x\",\"returnSecureToken\":true}')",
+      "Bash(grep -o '\"message\": \"[^\"]\\\\{0,90\\\\}')",
+      "Bash(grep -n \"^function closeArtigoForm\\\\|^\\\\$\\('artigoTitulo'\\).addEventListener\" assets/js/admin.js)",
+      "Bash(netstat -ano)",
+      "Bash(tasklist //FI \"PID eq 16432\" //FO LIST)",
+      "Bash(wmic process *)",
+      "Bash(node e2e-senha.js)",
+      "Bash(curl -s -X POST http://127.0.0.1:9099/identitytoolkit.googleapis.com/v1/projects/demo-harmony/accounts:query -H 'Authorization: Bearer owner' -H 'Content-Type: application/json' -d '{}')",
+      "Bash(python -c ' *)",
+      "Bash(node -e \"\")",
+      "Read(//dev/**)",
+      "Bash(sed -i 's/Number\\(u2.createdAt\\) >= 60000/Number\\(u2.createdAt\\) >= 2000/' e2e-senha.js)"
+    ]
+  }
+}

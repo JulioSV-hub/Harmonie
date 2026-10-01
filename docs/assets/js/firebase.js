@@ -15,5 +15,8 @@ export const isConfigured = Boolean(config.apiKey && config.projectId);
 export const app = isConfigured ? initializeApp(config) : null;
 export const db = app ? getFirestore(app) : null;
 
-if (useEmulator && db) connectFirestoreEmulator(db, '127.0.0.1', 8080);
+// Porta do emulador do Firestore: 8080, ou o valor de localStorage 'harmony.emulator.firestorePort'.
+if (useEmulator && db) {
+    connectFirestoreEmulator(db, '127.0.0.1', Number(localStorage.getItem('harmony.emulator.firestorePort')) || 8080);
+}
 export const emulator = useEmulator;
