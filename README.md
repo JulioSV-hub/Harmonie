@@ -15,8 +15,17 @@ Site de saúde mental e bem-estar do terapeuta integrativo Fernando Fernandes. T
 | Artigos | Criar e editar com editor de texto formatado, rascunho ou publicado, destaque na página inicial |
 | Textos e dados | Nome, profissão, registro profissional, WhatsApp, foto, apresentação, textos da página inicial e da página Sobre, horários de atendimento |
 | Atividades | Fases e tempos da respiração, benefícios, etapas e duração da meditação |
+| Assinatura | Página "Área Exclusiva": planos mensal/anual, preços, links de checkout da plataforma de pagamento, benefícios; liga/desliga a página |
 
 As alterações aparecem no site na hora.
+
+## Assinatura (Área Exclusiva)
+
+O pagamento e o conteúdo exclusivo ficam numa plataforma parceira (recomendada: Kiwify), que cuida de Pix/cartão, recorrência, cancelamento e área de membros. O site só apresenta os planos e leva ao checkout:
+
+1. Na plataforma, crie o produto de assinatura com dois planos (mensal e anual) e copie o **link de checkout** de cada um e o link da **área de membros**.
+2. No painel, aba **Assinatura**: preencha preços e links, use **Pré-visualizar** e marque **Página ativa no site**.
+3. Com a página ativa, aparecem o item **Exclusivo** no menu, o link no rodapé e uma chamada na página inicial e no fim dos artigos. Desativada, a página mostra "Em breve".
 
 ## Colocar no ar
 

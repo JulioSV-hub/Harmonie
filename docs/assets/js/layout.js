@@ -178,7 +178,48 @@
         applySite, linesToParagraphs, doneLoading, loadError,
     };
 
+    // Área Exclusiva: quando ativa no painel, aparece no menu, no rodapé e nas chamadas
+    // marcadas com data-cta-assinatura (página inicial e artigos).
+    function loadAssinatura() {
+        if (!document.getElementById('site-header')) return;
+        Promise.all([import('./store.js'), import('./assinatura-ui.js')])
+            .then(([store, ui]) => store.getAssinatura().then(a => ({ a, ui })))
+            .then(({ a, ui }) => {
+                if (!a.ativa || ui.planosDisponiveis(a).length === 0) return;
+                const current = document.body.dataset.page;
+
+                const li = document.createElement('li');
+                li.innerHTML = `<a href="assinatura.html" class="nav-link${current === 'assinatura' ? ' active' : ''}">`
+                    + `<i class="fas fa-crown"></i> Exclusivo</a>`;
+                const menu = document.getElementById('navMenu');
+                menu.insertBefore(li, menu.lastElementChild);
+                li.querySelector('a').addEventListener('click', () => menu.classList.remove('active'));
+
+                const nav = document.querySelector('.footer-section ul');
+                if (nav) nav.insertAdjacentHTML('beforeend', '<li><a href="assinatura.html">Área Exclusiva</a></li>');
+
+                document.querySelectorAll('[data-cta-assinatura]').forEach(el => {
+                    el.innerHTML = `
+                    <section class="cta-section">
+                        <div class="container">
+                            <div class="cta-card cta-exclusivo">
+                                <div class="cta-content">
+                                    <h2>${escapeHtml(a.titulo)}</h2>
+                                    <p>${escapeHtml(a.chamada)}</p>
+                                    <a href="assinatura.html" class="btn btn-primary"><i class="fas fa-crown"></i> Conhecer os planos</a>
+                                </div>
+                                <div class="cta-decoration"><i class="fas fa-crown"></i></div>
+                            </div>
+                        </div>
+                    </section>`;
+                    el.hidden = false;
+                });
+            })
+            .catch(err => console.error(err));
+    }
+
     renderHeader();
     renderFooter();
+    loadAssinatura();
     setTimeout(doneLoading, 10000);
 })();

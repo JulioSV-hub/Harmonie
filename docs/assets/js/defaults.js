@@ -53,3 +53,26 @@ export const DEFAULT_ATIVIDADES = {
         ],
     },
 };
+
+// Assinatura (Área Exclusiva). O pagamento e o conteúdo exclusivo ficam na plataforma
+// parceira (ex.: Kiwify); o site apenas apresenta os planos e leva ao checkout.
+export const DEFAULT_ASSINATURA = {
+    ativa: false,
+    titulo: 'Área Exclusiva',
+    subtitulo: 'Conteúdos novos e aprofundados para quem quer ir além no cuidado consigo.',
+    descricaoHtml: '<p>Na Área Exclusiva você encontra materiais que não estão no site aberto: conteúdos aprofundados, práticas guiadas e novidades preparadas especialmente para assinantes.</p>',
+    beneficios: [
+        'Conteúdos exclusivos para assinantes',
+        'Novos materiais com frequência',
+        'Acesso pelo celular ou computador',
+        'Cancele quando quiser',
+    ],
+    planos: [
+        { id: 'mensal', nome: 'Mensal', preco: 0, periodo: 'mês', link: '', descricao: 'Flexibilidade para começar.', selo: '' },
+        { id: 'anual', nome: 'Anual', preco: 0, periodo: 'ano', link: '', descricao: 'O melhor custo-benefício.', selo: 'Mais vantajoso' },
+    ],
+    planoDestaque: 'anual',
+    linkAssinantes: '',
+    chamada: 'Quer ir além? Conheça a Área Exclusiva, com conteúdos novos para assinantes.',
+    garantia: 'Você pode desistir em até 7 dias após a compra e receber o valor de volta, conforme o Código de Defesa do Consumidor.',
+};

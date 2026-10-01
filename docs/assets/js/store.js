@@ -4,7 +4,7 @@ import {
     collection, doc, getDoc, getDocs, addDoc, query, where, serverTimestamp,
 } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore-lite.js';
 import { db, isConfigured } from './firebase.js';
-import { DEFAULT_SITE, DEFAULT_ATIVIDADES } from './defaults.js';
+import { DEFAULT_SITE, DEFAULT_ATIVIDADES, DEFAULT_ASSINATURA } from './defaults.js';
 import { VIDEOS, ARTIGOS } from './seed-conteudo.js';
 
 export { isConfigured };
@@ -29,6 +29,18 @@ export async function getAtividades() {
         respiracao: { ...DEFAULT_ATIVIDADES.respiracao, ...data.respiracao },
         meditacao: { ...DEFAULT_ATIVIDADES.meditacao, ...data.meditacao },
     };
+}
+
+export async function getAssinatura() {
+    if (!isConfigured) return structuredClone(DEFAULT_ASSINATURA);
+    return mergeAssinatura(await getConfigDoc('assinatura'));
+}
+
+// Campos ausentes no banco usam o padrão; os planos são mesclados pelo id.
+export function mergeAssinatura(data = {}) {
+    const base = structuredClone(DEFAULT_ASSINATURA);
+    const planos = base.planos.map(p => ({ ...p, ...(data.planos || []).find(x => x.id === p.id) }));
+    return { ...base, ...data, planos };
 }
 
 export async function listVideos() {

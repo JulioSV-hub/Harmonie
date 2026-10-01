@@ -2126,3 +2126,126 @@ button.filter-tag {
 .preview-note i {
     color: #92400E;
 }
+
+/* ===========================
+   ÁREA EXCLUSIVA (ASSINATURA)
+   =========================== */
+.exclusivo-intro {
+    display: grid;
+    grid-template-columns: 3fr 2fr;
+    gap: 24px;
+    margin-bottom: 40px;
+    align-items: start;
+}
+
+.exclusivo-descricao {
+    margin: 0;
+}
+
+.exclusivo-intro .info-card ul li::marker {
+    color: var(--primary);
+}
+
+.plans-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 360px));
+    justify-content: center;
+    gap: 24px;
+    margin-bottom: 28px;
+}
+
+.plans-grid.single {
+    grid-template-columns: minmax(0, 380px);
+}
+
+.plan-card {
+    position: relative;
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-lg);
+    padding: 36px 28px 28px;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
+
+.plan-card.featured {
+    border: 2px solid var(--primary);
+    box-shadow: var(--shadow-md);
+}
+
+.plan-badge {
+    position: absolute;
+    top: -13px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--gradient-1);
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 4px 14px;
+    border-radius: 20px;
+    white-space: nowrap;
+}
+
+.plan-card h3 {
+    font-family: var(--font-heading);
+    font-size: 1.5rem;
+    margin-bottom: 6px;
+}
+
+.plan-desc {
+    color: var(--text-light);
+    font-size: 0.9rem;
+    margin-bottom: 18px;
+    min-height: 1.4em;
+}
+
+.plan-price {
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+    gap: 4px;
+}
+
+.plan-valor {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.plan-periodo {
+    color: var(--text-light);
+}
+
+.plan-equiv {
+    color: var(--primary-dark);
+    font-size: 0.85rem;
+    margin: 6px 0 22px;
+    min-height: 1.3em;
+}
+
+.plan-card .btn {
+    margin-top: auto;
+}
+
+.assinante-link {
+    text-align: center;
+    margin-top: 24px;
+    font-size: 0.95rem;
+}
+
+.cta-exclusivo {
+    background: linear-gradient(135deg, #3D4A44, #5A8577);
+}
+
+@media (max-width: 768px) {
+    .exclusivo-intro {
+        grid-template-columns: 1fr;
+    }
+
+    .plans-grid {
+        grid-template-columns: 1fr;
+    }
+}

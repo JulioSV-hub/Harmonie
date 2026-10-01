@@ -165,6 +165,7 @@
                     <button type="button" class="admin-tab" data-tab="artigos" role="tab"><i class="fas fa-book-open"></i> Artigos</button>
                     <button type="button" class="admin-tab" data-tab="site" role="tab"><i class="fas fa-pen"></i> Textos e dados</button>
                     <button type="button" class="admin-tab" data-tab="atividades" role="tab"><i class="fas fa-spa"></i> Atividades</button>
+                    <button type="button" class="admin-tab" data-tab="assinatura" role="tab"><i class="fas fa-crown"></i> Assinatura</button>
                 </nav>
             </div>
 
@@ -450,6 +451,74 @@
                             <p class="form-error" id="atividadesErro" role="alert" hidden></p>
                             <div class="form-actions" style="margin-top:24px;">
                                 <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Salvar alterações</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- ASSINATURA -->
+                    <div data-panel="assinatura" hidden>
+                        <form class="admin-form wide" id="assinaturaForm" novalidate>
+                            <fieldset>
+                                <legend>Publicação</legend>
+                                <div class="checkbox-row">
+                                    <label><input type="checkbox" id="assAtiva"> Página ativa no site</label>
+                                </div>
+                                <span class="field-hint" id="assStatus"></span>
+                            </fieldset>
+
+                            <fieldset>
+                                <legend>Apresentação</legend>
+                                <div class="form-group">
+                                    <label for="assTitulo">Título da página *</label>
+                                    <input type="text" id="assTitulo" maxlength="80">
+                                </div>
+                                <div class="form-group">
+                                    <label for="assSubtitulo">Subtítulo</label>
+                                    <input type="text" id="assSubtitulo" maxlength="200">
+                                </div>
+                                <div class="form-group">
+                                    <label>Descrição</label>
+                                    <div id="assDescricaoEditor" class="editor small"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="assBeneficios">Benefícios</label>
+                                    <textarea id="assBeneficios" rows="4" maxlength="1000"></textarea>
+                                    <span class="field-hint">Um por linha. Aparecem no quadro "O que você recebe".</span>
+                                </div>
+                                <div class="form-group">
+                                    <label for="assChamada">Chamada na página inicial e no fim dos artigos</label>
+                                    <textarea id="assChamada" rows="2" maxlength="250"></textarea>
+                                </div>
+                            </fieldset>
+
+                            <fieldset>
+                                <legend>Planos</legend>
+                                <span class="field-hint" style="margin-bottom:14px;">Cole o link de checkout de cada plano, criado na plataforma de pagamento (ex.: Kiwify). Plano sem preço ou sem link não aparece no site.</span>
+                                <div id="assPlanos"></div>
+                                <div class="form-group">
+                                    <label>Plano em destaque</label>
+                                    <div class="checkbox-row" id="assDestaque"></div>
+                                </div>
+                            </fieldset>
+
+                            <fieldset>
+                                <legend>Assinantes</legend>
+                                <div class="form-group">
+                                    <label for="assLinkAssinantes">Link de acesso à área de membros</label>
+                                    <input type="url" id="assLinkAssinantes" placeholder="https://...">
+                                    <span class="field-hint">Para quem já assina. Aparece como "Já é assinante? Acesse a área de membros".</span>
+                                </div>
+                                <div class="form-group">
+                                    <label for="assGarantia">Texto de garantia</label>
+                                    <textarea id="assGarantia" rows="2" maxlength="400"></textarea>
+                                </div>
+                            </fieldset>
+
+                            <p class="form-error" id="assErro" role="alert" hidden></p>
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Salvar alterações</button>
+                                <button type="button" class="btn btn-outline" id="assPreview"><i class="fas fa-eye"></i> Pré-visualizar</button>
+                                <a class="btn btn-outline" id="assVer" href="../assinatura.html" target="_blank" rel="noopener" hidden><i class="fas fa-external-link-alt"></i> Ver no site</a>
                             </div>
                         </form>
                     </div>

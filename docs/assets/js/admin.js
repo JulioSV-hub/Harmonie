@@ -9,6 +9,8 @@ import {
 import DOMPurify from 'https://cdn.jsdelivr.net/npm/dompurify@3.4.16/dist/purify.es.mjs';
 import { app, db, isConfigured, emulator } from './firebase.js';
 import { DEFAULT_SITE, DEFAULT_ATIVIDADES } from './defaults.js';
+import { mergeAssinatura } from './store.js';
+import { formatBRL, linkSeguro, planosDisponiveis, resumoAnual } from './assinatura-ui.js';
 import { VIDEOS, ARTIGOS } from './seed-conteudo.js';
 
 const { escapeHtml, formatDate, showNotification, youtubeId } = window.Harmonie;
@@ -314,10 +316,11 @@ function discardAll() {
     closeArtigoForm();
     renderSiteForm();
     renderAtividadesForm();
+    renderAssinaturaForm();
 }
 
 async function loadAll() {
-    await Promise.all([loadAgendamentos(), loadVideos(), loadArtigos(), loadSite(), loadAtividades()]);
+    await Promise.all([loadAgendamentos(), loadVideos(), loadArtigos(), loadSite(), loadAtividades(), loadAssinatura()]);
     updateImportBox();
 }
 
@@ -885,6 +888,163 @@ atividadesForm.addEventListener('submit', e => {
             showNotification('Atividades salvas.');
         } catch (err) { fail(err); }
     });
+});
+
+// ---------------------------------------------------------------------------
+// Assinatura (Área Exclusiva)
+
+let assinaturaData = mergeAssinatura();
+const assinaturaForm = $('assinaturaForm');
+trackDirty(assinaturaForm);
+const assDescricaoEditor = createEditor('#assDescricaoEditor', () => dirtyForms.add('assinaturaForm'));
+
+// Aceita "39,90", "39.90" e "1.299,00".
+function parsePreco(texto) {
+    let t = String(texto || '').replace(/[^\d.,]/g, '');
+    if (t.includes(',')) t = t.replace(/\./g, '').replace(',', '.');
+    const n = Number(t);
+    return Number.isFinite(n) ? Math.round(n * 100) / 100 : NaN;
+}
+
+function precoParaCampo(n) {
+    return Number(n) > 0 ? Number(n).toFixed(2).replace('.', ',') : '';
+}
+
+async function loadAssinatura() {
+    const snap = await getDoc(doc(db, 'config', 'assinatura'));
+    assinaturaData = mergeAssinatura(snap.exists() ? snap.data() : {});
+    renderAssinaturaForm();
+}
+
+function renderAssinaturaForm() {
+    const a = assinaturaData;
+    $('assAtiva').checked = Boolean(a.ativa);
+    $('assTitulo').value = a.titulo;
+    $('assSubtitulo').value = a.subtitulo;
+    assDescricaoEditor.set(a.descricaoHtml);
+    $('assBeneficios').value = a.beneficios.join('\n');
+    $('assChamada').value = a.chamada;
+    $('assLinkAssinantes').value = a.linkAssinantes;
+    $('assGarantia').value = a.garantia;
+    $('assPlanos').innerHTML = a.planos.map(p => `
+        <div class="repeat-item" data-plano="${p.id}">
+            <div class="fields">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Nome do plano</label>
+                        <input type="text" data-campo="nome" maxlength="40" value="${escapeHtml(p.nome)}">
+                    </div>
+                    <div class="form-group">
+                        <label>Preço (R$ por ${escapeHtml(p.periodo)})</label>
+                        <input type="text" inputmode="decimal" data-campo="preco" placeholder="0,00" value="${precoParaCampo(p.preco)}">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Frase curta</label>
+                        <input type="text" data-campo="descricao" maxlength="80" value="${escapeHtml(p.descricao)}">
+                    </div>
+                    <div class="form-group">
+                        <label>Selo (opcional)</label>
+                        <input type="text" data-campo="selo" maxlength="30" placeholder="Ex.: Mais vantajoso" value="${escapeHtml(p.selo)}">
+                    </div>
+                </div>
+                <div class="form-group" style="margin-bottom:0;">
+                    <label>Link de checkout</label>
+                    <input type="url" data-campo="link" placeholder="https://pay.kiwify.com.br/..." value="${escapeHtml(p.link)}">
+                </div>
+            </div>
+            <div class="item-actions"></div>
+        </div>`).join('');
+    $('assDestaque').innerHTML = a.planos.map(p =>
+        `<label><input type="radio" name="assDestaque" value="${p.id}"${p.id === a.planoDestaque ? ' checked' : ''}> ${escapeHtml(p.nome)}</label>`).join('');
+    setError($('assErro'), '');
+    clearDirty(assinaturaForm);
+    updateAssinaturaStatus();
+}
+
+function lerAssinaturaForm() {
+    const planos = [...$('assPlanos').querySelectorAll('[data-plano]')].map(el => {
+        const base = assinaturaData.planos.find(p => p.id === el.dataset.plano);
+        const campo = c => el.querySelector(`[data-campo=${c}]`).value.trim();
+        return { ...base, nome: campo('nome'), preco: parsePreco(campo('preco')), descricao: campo('descricao'), selo: campo('selo'), link: campo('link') };
+    });
+    return {
+        ativa: $('assAtiva').checked,
+        titulo: $('assTitulo').value.trim(),
+        subtitulo: $('assSubtitulo').value.trim(),
+        descricaoHtml: assDescricaoEditor.get(),
+        beneficios: $('assBeneficios').value.split('\n').map(s => s.trim()).filter(Boolean),
+        chamada: $('assChamada').value.trim(),
+        planos,
+        planoDestaque: assinaturaForm.querySelector('input[name=assDestaque]:checked')?.value || 'anual',
+        linkAssinantes: $('assLinkAssinantes').value.trim(),
+        garantia: $('assGarantia').value.trim(),
+    };
+}
+
+// Resumo do que o site está mostrando agora, baseado no que está salvo.
+function updateAssinaturaStatus() {
+    const disponiveis = planosDisponiveis(assinaturaData).map(p => p.nome);
+    const r = resumoAnual(assinaturaData);
+    let texto;
+    if (assinaturaData.ativa && disponiveis.length) {
+        texto = `No ar com os planos: ${disponiveis.join(' e ')}.`;
+    } else if (assinaturaData.ativa) {
+        texto = 'Ativa, mas nenhum plano tem preço e link válidos; o site mostra "Em breve".';
+    } else {
+        texto = 'Desativada: a página mostra "Em breve" e não aparece no menu.';
+    }
+    if (r) texto += ` Anual equivale a ${formatBRL(r.porMes)}/mês${r.economia ? ` (economia de ${r.economia}%)` : ''}.`;
+    $('assStatus').textContent = texto;
+    $('assVer').hidden = !(assinaturaData.ativa && disponiveis.length);
+}
+
+function validarAssinatura(dados) {
+    if (!dados.titulo) return 'Informe o título da página.';
+    for (const p of dados.planos) {
+        if (!p.nome) return 'Dê um nome a cada plano.';
+        if (Number.isNaN(p.preco) || p.preco < 0) return `Preço inválido no plano ${p.nome}. Use o formato 39,90.`;
+        if (p.link && !linkSeguro(p.link)) return `O link do plano ${p.nome} precisa começar com https://`;
+        if (p.preco > 0 && !p.link) return `Falta o link de checkout do plano ${p.nome}.`;
+        if (p.link && !(p.preco > 0)) return `Falta o preço do plano ${p.nome}.`;
+    }
+    if (dados.linkAssinantes && !linkSeguro(dados.linkAssinantes)) return 'O link da área de membros precisa começar com https://';
+    if (dados.ativa && !planosDisponiveis(dados).length) {
+        return 'Para ativar a página, preencha preço e link de checkout de pelo menos um plano.';
+    }
+    return '';
+}
+
+assinaturaForm.addEventListener('submit', e => {
+    e.preventDefault();
+    const dados = lerAssinaturaForm();
+    const msg = validarAssinatura(dados);
+    if (msg) return setError($('assErro'), msg);
+    setError($('assErro'), '');
+    dados.planos.forEach(p => { p.link = p.link ? linkSeguro(p.link) : ''; });
+    if (dados.linkAssinantes) dados.linkAssinantes = linkSeguro(dados.linkAssinantes);
+
+    withBusy(assinaturaForm.querySelector('button[type=submit]'), async () => {
+        try {
+            await setDoc(doc(db, 'config', 'assinatura'), { ...dados, atualizadoEm: serverTimestamp() });
+            assinaturaData = mergeAssinatura(dados);
+            renderAssinaturaForm();
+            showNotification(dados.ativa ? 'Assinatura salva. A página está no ar.' : 'Assinatura salva (página desativada).');
+        } catch (err) { fail(err); }
+    });
+});
+
+$('assPreview').addEventListener('click', () => {
+    const dados = lerAssinaturaForm();
+    const precosRuins = dados.planos.filter(p => Number.isNaN(p.preco));
+    if (precosRuins.length) return setError($('assErro'), `Preço inválido no plano ${precosRuins[0].nome}. Use o formato 39,90.`);
+    if (!planosDisponiveis(dados).length) {
+        return setError($('assErro'), 'Para pré-visualizar, preencha preço e link de checkout de pelo menos um plano.');
+    }
+    setError($('assErro'), '');
+    localStorage.setItem('harmonie.preview.assinatura', JSON.stringify(dados));
+    window.open('../assinatura.html?preview=1', 'harmonie-preview');
 });
 
 // ---------------------------------------------------------------------------

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%8C%BF%3C/text%3E%3C/svg%3E">
+    <title>Área Exclusiva - Harmonie</title>
+    <meta name="description" content="Conheça os planos da Área Exclusiva do Harmonie.">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body data-page="assinatura" class="is-loading">
+    <div id="site-header"></div>
+
+    <main class="main-content">
+        <section class="page-header">
+            <div class="container">
+                <h1 data-dyn><i class="fas fa-crown"></i> <span id="titulo">Área Exclusiva</span></h1>
+                <p id="subtitulo" data-dyn></p>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <div class="container">
+                <p class="privacy-note preview-note" id="previewAviso" hidden>
+                    <i class="fas fa-eye"></i>
+                    <span><strong>Pré-visualização.</strong> É assim que a página vai aparecer. As alterações ainda não foram salvas por esta tela. Feche esta aba para voltar ao painel.</span>
+                </p>
+
+                <div class="empty-state" id="emBreve" hidden>
+                    <i class="fas fa-crown"></i>
+                    <h3>Em breve</h3>
+                    <p>A Área Exclusiva está sendo preparada com carinho. Volte em breve!</p>
+                </div>
+
+                <div id="conteudo" hidden>
+                    <div class="exclusivo-intro">
+                        <div class="about-card exclusivo-descricao" id="descricao"></div>
+                        <div class="info-card">
+                            <h3><i class="fas fa-gift"></i> O que você recebe</h3>
+                            <ul id="beneficios"></ul>
+                        </div>
+                    </div>
+
+                    <div class="plans-grid" id="planos"></div>
+
+                    <p class="form-note" id="garantia"></p>
+                    <p class="form-note">
+                        <i class="fas fa-lock"></i>
+                        O pagamento é feito com segurança na plataforma parceira, e o acesso ao conteúdo é liberado por ela.
+                    </p>
+                    <p class="assinante-link" id="assinantes" hidden>
+                        Já é assinante? <a id="assinantesLink" rel="noopener">Acesse a área de membros <i class="fas fa-arrow-right"></i></a>
+                    </p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="site-footer"></div>
+
+    <script src="assets/js/layout.js"></script>
+    <script type="module">
+        import DOMPurify from 'https://cdn.jsdelivr.net/npm/dompurify@3.4.16/dist/purify.es.mjs';
+        import { getSite, getAssinatura, mergeAssinatura } from './assets/js/store.js';
+        import { formatBRL, linkSeguro, planosDisponiveis, resumoAnual } from './assets/js/assinatura-ui.js';
+
+        const { escapeHtml } = window.Harmonie;
+
+        // Pré-visualização do painel: dados do formulário vêm do localStorage deste navegador.
+        function lerPreview() {
+            try {
+                const data = JSON.parse(localStorage.getItem('harmonie.preview.assinatura'));
+                return data ? mergeAssinatura(data) : null;
+            } catch {
+                return null;
+            }
+        }
+
+        function planoHtml(plano, a, destaque) {
+            const resumo = plano.id === 'anual' ? resumoAnual(a) : null;
+            const equiv = resumo
+                ? `<p class="plan-equiv">equivale a ${formatBRL(resumo.porMes)} por mês${resumo.economia ? ` · economize ${resumo.economia}%` : ''}</p>`
+                : '<p class="plan-equiv">&nbsp;</p>';
+            return `
+            <div class="plan-card${destaque ? ' featured' : ''}">
+                ${plano.selo ? `<span class="plan-badge">${escapeHtml(plano.selo)}</span>` : ''}
+                <h3>${escapeHtml(plano.nome)}</h3>
+                <p class="plan-desc">${escapeHtml(plano.descricao)}</p>
+                <div class="plan-price">
+                    <span class="plan-valor">${formatBRL(plano.preco)}</span>
+                    <span class="plan-periodo">/${escapeHtml(plano.periodo)}</span>
+                </div>
+                ${equiv}
+                <a href="${escapeHtml(linkSeguro(plano.link))}" class="btn ${destaque ? 'btn-primary' : 'btn-outline'} btn-full" rel="noopener">
+                    <i class="fas fa-crown"></i> Assinar plano ${escapeHtml(plano.nome.toLowerCase())}
+                </a>
+            </div>`;
+        }
+
+        try {
+            const preview = new URLSearchParams(location.search).get('preview') === '1';
+            const [site, salva] = await Promise.all([getSite(), getAssinatura()]);
+            const a = (preview && lerPreview()) || salva;
+            window.Harmonie.applySite(site);
+            document.getElementById('previewAviso').hidden = !preview;
+
+            document.getElementById('titulo').textContent = a.titulo;
+            document.getElementById('subtitulo').textContent = a.subtitulo;
+            document.title = `${a.titulo} - Harmonie`;
+
+            const planos = planosDisponiveis(a);
+            const publicada = (a.ativa || preview) && planos.length > 0;
+            document.getElementById('emBreve').hidden = publicada;
+            document.getElementById('conteudo').hidden = !publicada;
+
+            if (publicada) {
+                document.getElementById('descricao').innerHTML = DOMPurify.sanitize(a.descricaoHtml);
+                document.getElementById('beneficios').innerHTML = a.beneficios.map(b => `<li>${escapeHtml(b)}</li>`).join('');
+                const container = document.getElementById('planos');
+                container.classList.toggle('single', planos.length === 1);
+                container.innerHTML = planos.map(p => planoHtml(p, a, p.id === a.planoDestaque || planos.length === 1)).join('');
+                document.getElementById('garantia').textContent = a.garantia;
+                document.getElementById('garantia').hidden = !a.garantia;
+                const membros = linkSeguro(a.linkAssinantes);
+                document.getElementById('assinantes').hidden = !membros;
+                if (membros) document.getElementById('assinantesLink').href = membros;
+            }
+            window.Harmonie.doneLoading();
+        } catch (e) {
+            window.Harmonie.loadError(e);
+        }
+    </script>
+</body>
+</html>
