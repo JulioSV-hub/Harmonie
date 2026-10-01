@@ -16,3 +16,6 @@ Thumbs.db
 # Firebase local
 .firebase/
 *-debug.log
+
+# Configurações locais do Claude Code
+.claude/
