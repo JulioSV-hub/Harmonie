@@ -2249,3 +2249,140 @@ button.filter-tag {
         grid-template-columns: 1fr;
     }
 }
+
+/* ===========================
+   NOVIDADES (PÁGINA INICIAL)
+   =========================== */
+.updates-section {
+    padding: 70px 0 10px;
+}
+
+.updates-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.update-card {
+    display: flex;
+    flex-direction: column;
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    color: var(--text);
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.update-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-hover);
+    color: var(--text);
+}
+
+.update-thumb {
+    aspect-ratio: 16 / 9;
+    background: var(--gradient-2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.update-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.update-thumb i {
+    font-size: 2.4rem;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.update-info {
+    padding: 18px 20px 20px;
+}
+
+.update-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+    font-size: 0.78rem;
+}
+
+.update-type {
+    color: var(--primary-dark);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.update-new {
+    background: var(--accent-dark);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: 600;
+}
+
+.update-date {
+    color: var(--text-muted);
+    margin-left: auto;
+}
+
+.update-info h3 {
+    font-family: var(--font-heading);
+    font-size: 1.1rem;
+    line-height: 1.35;
+    margin-bottom: 6px;
+}
+
+.update-info p {
+    color: var(--text-light);
+    font-size: 0.88rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+@media (max-width: 600px) {
+    .updates-section {
+        padding-top: 48px;
+    }
+
+    .updates-grid {
+        gap: 12px;
+    }
+
+    .update-card {
+        flex-direction: row;
+        align-items: stretch;
+    }
+
+    .update-thumb {
+        flex: 0 0 96px;
+        aspect-ratio: auto;
+    }
+
+    .update-thumb i {
+        font-size: 1.6rem;
+    }
+
+    .update-info {
+        padding: 12px 14px;
+        min-width: 0;
+    }
+
+    .update-info h3 {
+        font-size: 1rem;
+        margin-bottom: 0;
+    }
+
+    .update-info p {
+        display: none;
+    }
+}

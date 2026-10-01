@@ -34,6 +34,14 @@
             </div>
         </section>
 
+        <section class="updates-section" id="novidades" hidden>
+            <div class="container">
+                <h2 class="section-title">Novidades</h2>
+                <p class="section-subtitle">O que chegou de novo por aqui</p>
+                <div class="updates-grid" id="novidadesLista"></div>
+            </div>
+        </section>
+
         <section class="features">
             <div class="container">
                 <h2 class="section-title">Como podemos te ajudar</h2>
@@ -151,14 +159,65 @@
 
     <script src="assets/js/layout.js"></script>
     <script type="module">
-        import { getSite, listArtigos } from './assets/js/store.js';
+        import { getSite, listArtigos, listVideos } from './assets/js/store.js';
+
+        const { escapeHtml, formatDate, youtubeId } = window.Harmonie;
+        const DIAS_NOVO = 15;
+        const MAX_NOVIDADES = 4;
+
+        function isoLocal(d) {
+            const p = n => String(n).padStart(2, '0');
+            return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+        }
+
+        // Últimos artigos e vídeos juntos, do mais recente para o mais antigo.
+        function novidades(artigos, videos) {
+            const itens = [
+                ...artigos.map(a => ({
+                    tipo: 'Artigo', icone: 'fa-book-open', data: a.data || '',
+                    titulo: a.titulo, texto: a.resumo, href: 'artigo.html?id=' + encodeURIComponent(a.id),
+                })),
+                ...videos.map(v => {
+                    const yt = youtubeId(v.youtube);
+                    return {
+                        tipo: 'Vídeo', icone: 'fa-play', data: v.criadoEm?.toDate ? isoLocal(v.criadoEm.toDate()) : '',
+                        titulo: v.titulo, texto: v.descricao, externo: true,
+                        href: yt ? `https://www.youtube.com/watch?v=${yt}` : 'videos.html',
+                        thumb: yt ? `https://img.youtube.com/vi/${yt}/mqdefault.jpg` : '',
+                    };
+                }),
+            ];
+            return itens.filter(i => i.data).sort((a, b) => b.data.localeCompare(a.data)).slice(0, MAX_NOVIDADES);
+        }
+
+        function renderNovidades(itens) {
+            const limite = new Date();
+            limite.setDate(limite.getDate() - DIAS_NOVO);
+            const desde = isoLocal(limite);
+            document.getElementById('novidadesLista').innerHTML = itens.map(i => `
+                <a class="update-card" href="${escapeHtml(i.href)}"${i.externo ? ' target="_blank" rel="noopener"' : ''}>
+                    <div class="update-thumb">
+                        ${i.thumb ? `<img src="${escapeHtml(i.thumb)}" alt="" loading="lazy">` : `<i class="fas ${i.icone}"></i>`}
+                    </div>
+                    <div class="update-info">
+                        <div class="update-meta">
+                            <span class="update-type"><i class="fas ${i.icone}"></i> ${i.tipo}</span>
+                            ${i.data >= desde ? '<span class="update-new">Novo</span>' : ''}
+                            <span class="update-date">${formatDate(i.data)}</span>
+                        </div>
+                        <h3>${escapeHtml(i.titulo)}</h3>
+                        ${i.texto ? `<p>${escapeHtml(i.texto)}</p>` : ''}
+                    </div>
+                </a>`).join('');
+            document.getElementById('novidades').hidden = itens.length === 0;
+        }
 
         function iniciais(nome) {
             return nome.split(/\s+/).filter(Boolean).map(p => p[0]).slice(0, 2).join('').toUpperCase();
         }
 
         try {
-            const [site, artigos] = await Promise.all([getSite(), listArtigos()]);
+            const [site, artigos, videos] = await Promise.all([getSite(), listArtigos(), listVideos()]);
             const set = (id, text) => { document.getElementById(id).textContent = text; };
 
             set('heroTitulo', site.heroTitulo);
@@ -173,6 +232,7 @@
             foto.alt = `${site.profissional} - ${site.profissao}`;
             if (site.fotoUrl) foto.src = site.fotoUrl;
             window.Harmonie.applySite(site);
+            renderNovidades(novidades(artigos, videos));
 
             const artigo = artigos.find(a => a.destaque) || artigos[0];
             if (artigo) {

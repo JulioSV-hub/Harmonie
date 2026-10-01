@@ -169,6 +169,14 @@ async function abrirPainel() {
     if (!painelCarregado) {
         painelCarregado = true;
         await loadAll();
+        // Primeiro acesso com o banco vazio: importa o conteúdo inicial automaticamente,
+        // para o site não ficar sem conteúdo. Só acontece uma vez (cria config/site).
+        if (bancoVazio()) {
+            try {
+                await importarConteudoInicial();
+                showNotification('Bem-vindo! O conteúdo inicial do site foi carregado. Agora é só editar.', 'info');
+            } catch (err) { fail(err); }
+        }
     }
 }
 
@@ -1054,23 +1062,33 @@ function updateImportBox() {
     $('importarBox').hidden = videos.length > 0 || artigos.length > 0 || siteExiste || atividadesExiste;
 }
 
+function bancoVazio() {
+    return videos.length === 0 && artigos.length === 0 && !siteExiste && !atividadesExiste;
+}
+
+// Copia os vídeos, artigos, textos e atividades de exemplo para o banco.
+async function importarConteudoInicial() {
+    const batch = writeBatch(db);
+    batch.set(doc(db, 'config', 'site'), { ...DEFAULT_SITE, atualizadoEm: serverTimestamp() });
+    batch.set(doc(db, 'config', 'atividades'), { ...structuredClone(DEFAULT_ATIVIDADES), atualizadoEm: serverTimestamp() });
+    // Vídeos de exemplo ficam com data antiga para não aparecerem como "Novo";
+    // a ordem original é mantida (o primeiro da lista é o mais recente).
+    const base = Date.parse('2026-08-18T12:00:00Z');
+    VIDEOS.forEach(({ id, ...v }, i) => {
+        batch.set(doc(collection(db, 'videos')), { ...v, criadoEm: Timestamp.fromMillis(base - i * 1000) });
+    });
+    ARTIGOS.forEach(({ id, ...a }) => {
+        batch.set(doc(db, 'artigos', id), { ...a, criadoEm: serverTimestamp() });
+    });
+    await batch.commit();
+    await loadAll();
+}
+
 $('importarBtn').addEventListener('click', () => {
     if (!confirm('Importar os vídeos, artigos, textos e atividades de exemplo?')) return;
     withBusy($('importarBtn'), async () => {
         try {
-            const batch = writeBatch(db);
-            batch.set(doc(db, 'config', 'site'), { ...DEFAULT_SITE, atualizadoEm: serverTimestamp() });
-            batch.set(doc(db, 'config', 'atividades'), { ...structuredClone(DEFAULT_ATIVIDADES), atualizadoEm: serverTimestamp() });
-            const agora = Date.now();
-            // Mantém a ordem original: o primeiro da lista é o mais recente.
-            VIDEOS.forEach(({ id, ...v }, i) => {
-                batch.set(doc(collection(db, 'videos')), { ...v, criadoEm: Timestamp.fromMillis(agora - i * 1000) });
-            });
-            ARTIGOS.forEach(({ id, ...a }) => {
-                batch.set(doc(db, 'artigos', id), { ...a, criadoEm: serverTimestamp() });
-            });
-            await batch.commit();
-            await loadAll();
+            await importarConteudoInicial();
             showNotification('Conteúdo inicial importado.');
         } catch (err) { fail(err); }
     });
