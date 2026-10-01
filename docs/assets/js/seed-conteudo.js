@@ -8,42 +8,48 @@ export const VIDEOS = [
         "titulo": "Superando a procrastinação",
         "descricao": "Entenda as raízes emocionais da procrastinação e descubra estratégias para superá-la com gentileza.",
         "youtube": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-        "categoria": "Motivação"
+        "categoria": "Motivação",
+        "data": "2026-08-18"
     },
     {
         "id": "video-5",
         "titulo": "Comunicação não-violenta nos relacionamentos",
         "descricao": "Aprenda técnicas de comunicação que fortalecem vínculos e reduzem conflitos.",
         "youtube": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-        "categoria": "Relacionamentos"
+        "categoria": "Relacionamentos",
+        "data": "2026-08-18"
     },
     {
         "id": "video-4",
         "titulo": "Sono e saúde mental: a conexão essencial",
         "descricao": "Como a qualidade do sono afeta sua saúde mental e dicas para melhorar sua rotina noturna.",
         "youtube": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-        "categoria": "Sono"
+        "categoria": "Sono",
+        "data": "2026-08-18"
     },
     {
         "id": "video-3",
         "titulo": "Construindo uma autoestima saudável",
         "descricao": "Entenda o que é autoestima, como ela se forma e passos para fortalecê-la no seu dia a dia.",
         "youtube": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-        "categoria": "Autoestima"
+        "categoria": "Autoestima",
+        "data": "2026-08-18"
     },
     {
         "id": "video-2",
         "titulo": "Mindfulness: Vivendo o momento presente",
         "descricao": "Introdução à prática de mindfulness e como ela pode transformar sua relação com pensamentos negativos.",
         "youtube": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-        "categoria": "Mindfulness"
+        "categoria": "Mindfulness",
+        "data": "2026-08-18"
     },
     {
         "id": "video-1",
         "titulo": "Como lidar com a ansiedade no dia a dia",
         "descricao": "Técnicas práticas para gerenciar a ansiedade em situações cotidianas. Aprenda a reconhecer os sinais e controlar os sintomas.",
         "youtube": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-        "categoria": "Ansiedade"
+        "categoria": "Ansiedade",
+        "data": "2026-08-18"
     }
 ];
 

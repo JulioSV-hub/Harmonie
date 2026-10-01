@@ -180,7 +180,7 @@
                 ...videos.map(v => {
                     const yt = youtubeId(v.youtube);
                     return {
-                        tipo: 'Vídeo', icone: 'fa-play', data: v.criadoEm?.toDate ? isoLocal(v.criadoEm.toDate()) : '',
+                        tipo: 'Vídeo', icone: 'fa-play', data: v.criadoEm?.toDate ? isoLocal(v.criadoEm.toDate()) : (v.data || ''),
                         titulo: v.titulo, texto: v.descricao, externo: true,
                         href: yt ? `https://www.youtube.com/watch?v=${yt}` : 'videos.html',
                         thumb: yt ? `https://img.youtube.com/vi/${yt}/mqdefault.jpg` : '',
